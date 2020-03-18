@@ -83,7 +83,7 @@ def initialization():
 
 
 def screen(grad, b, method):
-   screened = Byzantine_algs[method](grad, b) #Where is the Byzantine_algs function defined??
+   screened = Byzantine_algs[method](grad, b) 
    return screened
    
 def acc_test(model, t_data, t_label):

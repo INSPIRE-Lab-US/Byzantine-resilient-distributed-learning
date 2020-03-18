@@ -1,9 +1,10 @@
 # read and preprocess data
 import random
 from MNIST_read import mnist_read
+import pickle
 
 class dis_data:
-    def __init__(self, data, label, nodes, shuffle=False, index=None):
+    def __init__(self, data, label, nodes, shuffle=False, index=None, one_hot=False):
         self.size = len(data)
         self.nodes = nodes
         self.all_data = data
@@ -15,6 +16,11 @@ class dis_data:
         if shuffle:
             self.shuffle()
         self.dist_data, self.dist_label = self.distribute(nodes)
+        if one_hot:
+            new_label = []
+            for node in self.dist_label:
+                new_label.append(_one_hot(node))
+            self.dist_label = new_label
         
     def shuffle(self):
         random.shuffle(self.index)
@@ -50,9 +56,17 @@ class dis_data:
             label.append(self.dist_label[node][index])
         return sample, label
 
-def data_prep(dataset, nodes, size=0):
+def data_prep(dataset, nodes, size=0, one_hot=False):
     if dataset == 'MNIST':
         train_data, train_label, test_data, test_label = mnist_read()
+        if one_hot:
+            test_label = _one_hot(test_label)
+    elif dataset == 'CIFAR':
+        with open('cifar_dataset.pickle', 'rb') as handle:
+            (train_data, train_label, test_data, test_label) = pickle.load(handle)
+        train_data, test_data = train_data / 255.0, test_data / 255.0
+        train_label = _one_hot(train_label)
+        test_label = _one_hot(test_label)
     else:
         raise NameError("Cannot find %s dataset") % (dataset)
     
@@ -60,5 +74,13 @@ def data_prep(dataset, nodes, size=0):
         train_data = train_data[:size]
         train_label = train_label[:size]
         
-    full_data = dis_data(train_data, train_label, nodes, shuffle = True)
-    return full_data
+    full_data = dis_data(train_data, train_label, nodes, shuffle = True, one_hot=one_hot)
+    return full_data, test_data, test_label
+
+def _one_hot(label):
+    l_oh = []
+    for i in label:
+        new_l = [0] * 10
+        new_l[int(i)] = 1
+        l_oh.append(new_l)
+    return l_oh
