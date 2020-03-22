@@ -47,12 +47,17 @@ def gen_graph(nodes, con_rate, b=0):          # connecting rate between 1-100
        d_max = 0
        for row in graph:
            if sum(row) > d_max:
+               # maximum number of neighbors for any single node 
                d_max = sum(row)
+
+       # w is another graph matrix where the neighbors of each node are indicated by a 0 or 1/d_max
        w = [row[:] for row in graph]
        for ind, row in enumerate(w):
            d = sum(row)
            w[ind] = [col/d_max for col in row]
            w[ind][ind] = 1 - (d - 1) / d_max
+           
+       # Checks if the number of neighbors for each node is greater than 2b+1 
        if all([sum(row) >= 2 * b + 1 for row in graph]):
            re = 0
    return w, graph   
