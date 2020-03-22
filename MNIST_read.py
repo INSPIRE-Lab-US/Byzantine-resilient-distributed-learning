@@ -10,14 +10,21 @@ import gzip
 import shutil
 
 
-
+'''
+ This function extracts data from the gzipped MNIST dataset and returns
+ training and testing data along with their respective labels
+ '''
 def mnist_read(path = "."):
+    
+    # Training data
     with gzip.open('train-images-idx3-ubyte.gz', 'rb') as f_in:
         with open('train-images-idx3-ubyte', 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)    
     with gzip.open('train-labels-idx1-ubyte.gz', 'rb') as f_in:
         with open('train-labels-idx1-ubyte', 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out) 
+    
+    # Testing data
     with gzip.open('t10k-images-idx3-ubyte.gz', 'rb') as f_in:
         with open('t10k-images-idx3-ubyte', 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out) 
@@ -25,8 +32,12 @@ def mnist_read(path = "."):
         with open('t10k-labels-idx1-ubyte', 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out) 
 
-            
+    '''
+    Training Data
+    '''
+    #Path images
     fname_img = os.path.join(path, 'train-images-idx3-ubyte')
+    #Path image labels
     fname_lbl = os.path.join(path, 'train-labels-idx1-ubyte')
 
     with open(fname_lbl, 'rb') as flbl:
@@ -37,6 +48,7 @@ def mnist_read(path = "."):
         magic, num, rows, cols = struct.unpack(">IIII", fimg.read(16))
         img = np.fromfile(fimg, dtype=np.uint8).reshape(len(lbl), rows, cols)
 
+    #Lamba function accepts index and returns a tuple: (label, image)
     get_img = lambda idx: (lbl[idx], img[idx])
 
     trainingdata = []
@@ -51,8 +63,12 @@ def mnist_read(path = "."):
             image.extend(row)
         train_data.append(image)
     
-    
+    '''
+    Testing Data
+    '''
+    #Path images
     fname_img = os.path.join(path, 't10k-images-idx3-ubyte')
+    #Path image labels
     fname_lbl = os.path.join(path, 't10k-labels-idx1-ubyte')    
 
     with open(fname_lbl, 'rb') as flbl:
@@ -62,8 +78,6 @@ def mnist_read(path = "."):
     with open(fname_img, 'rb') as fimg:
         magic, num, rows, cols = struct.unpack(">IIII", fimg.read(16))
         img = np.fromfile(fimg, dtype=np.uint8).reshape(len(lbl), rows, cols)
-
-    get_img = lambda idx: (lbl[idx], img[idx])    
     
     testdata = []
     for i in range(len(lbl)):
