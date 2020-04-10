@@ -4,6 +4,9 @@ from MNIST_read import mnist_read
 import pickle
 
 class dis_data:
+    '''
+    Encapsulation of our training data split across multiple nodes
+    '''
     def __init__(self, data, label, nodes, shuffle=False, index=None, one_hot=False):
         self.size = len(data)
         self.nodes = nodes
@@ -23,6 +26,9 @@ class dis_data:
             self.dist_label = new_label
         
     def shuffle(self):
+        '''
+        Shuffle the training data and labels, updates the member variables and returns the shuffled data and labels vectors
+        '''
         random.shuffle(self.index)
         new_data = []
         new_label = []
@@ -33,20 +39,26 @@ class dis_data:
         self.all_label = new_label
         return new_data, new_label
     
-    def distribute(self, nodes):  #Evenly distributed the data into nodes
+    def distribute(self, nodes):
+        '''
+        Evenly distribute the training data across the nodes
+        '''
         remainder = self.size % nodes
         frac = int(self.size/nodes)
         dist_data = []
         dist_label = []
         for n in range(nodes):
             if n == 0:
-                dist_data.append(self.all_data[n * frac : (n + 1) * frac + remainder])
-                dist_label.append(self.all_label[n * frac : (n + 1) * frac + remainder])
+                dist_data.append(self.all_data[0 : frac + remainder])
+                dist_label.append(self.all_label[0 : frac + remainder])
             else:                
                 dist_data.append(self.all_data[n * frac : (n + 1) * frac])
                 dist_label.append(self.all_label[n * frac : (n + 1) * frac])
         return dist_data, dist_label
     def next_batch(self, node, size):
+        '''
+        Return next batch of distributed training samples with labels
+        '''
         l = len(self.dist_data[node])
         sample = []
         label = []
@@ -57,6 +69,9 @@ class dis_data:
         return sample, label
 
 def data_prep(dataset, nodes, size=0, one_hot=False):
+    '''
+    Distribute training data across nodes and return test data w/ labels
+    '''
     if dataset == 'MNIST':
         train_data, train_label, test_data, test_label = mnist_read()
         if one_hot:
