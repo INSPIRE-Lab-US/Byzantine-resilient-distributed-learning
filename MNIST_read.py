@@ -10,12 +10,13 @@ import gzip
 import shutil
 
 
-'''
- This function extracts data from the gzipped MNIST dataset and returns
- training and testing data along with their respective labels
- '''
+
 def mnist_read(path = "./data/MNIST/raw"):
-    
+    '''
+    Extracts data from the gzipped MNIST dataset and returns
+    training and testing data along with their respective labels
+    '''
+
     # Training data
     with gzip.open(os.path.join(path,'train-images-idx3-ubyte.gz'), 'rb') as f_in:
         with open(os.path.join(path,'train-images-idx3-ubyte'), 'wb') as f_out:

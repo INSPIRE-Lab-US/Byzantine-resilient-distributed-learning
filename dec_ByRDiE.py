@@ -26,10 +26,14 @@ class experiment_parameters:
        self.Byzantine = Byzantine
        self.con_rate = connection_rate
 
-def gen_graph(nodes, con_rate, b=0):          # connecting rate between 1-100
+def gen_graph(nodes, con_rate, b=0):
+   '''
+   Generates a graph with nodes (M), a specified connection rate (con_rate) and a number of Byzantine nodes (b)
+   ''' 
    
    re = 1                      # regenerate if graph assumption not satisfied
    while re:
+       # Generating the adjacency matrix
        graph = []
        for _ in range(nodes):
            graph.append([])
@@ -164,13 +168,17 @@ class byrdie_initialization:
     def save(self, r):
         with open('./checkpt/ByRDiE_checkpt_ini_%d.pickle'%r, 'wb') as handle:
             pickle.dump(self, handle)
-        
+
+
 def chekpt_read(r):
+    '''
+    Attempts to read the saved initialization and checkpoint for the ByRDiE experiment and returns all parameters relevant to continuing the experiment
+    '''
     with open('./checkpt/ByRDiE_checkpt_ini_%d.pickle'%r, 'rb') as handle: 
         ini = pickle.load(handle)
     with open('./checkpt/ByRDiE_checkpt_current_%d.pickle'%r, 'rb') as handle: 
         current = pickle.load(handle)
-        
+    
     return ini.parameters, ini.graph, ini.neighbors, ini.local_data, ini.test_data, ini.test_label, current.weights, current.save, current.iteration
 
 if __name__ == "__main__":
@@ -183,7 +191,7 @@ if __name__ == "__main__":
                                   screen=False, b=0, Byzantine='random', stepsize = 1e-1)
         loaded = False
         #Generate the graph
-        W_0, graph = gen_graph(para.M, para.con_rate, para.b)    
+        W_0, graph = gen_graph(para.M, para.con_rate, para.b)
         local_set, test_data, test_label = data_prep(para.dataset, para.M, para.N, one_hot=True)
         neighbors = get_neighbor(graph)
         checkpt_ini = byrdie_initialization(para, graph, neighbors, local_set, test_data, test_label)
@@ -200,12 +208,14 @@ if __name__ == "__main__":
             node.assign(w, sess)
     
     for iteration in range(t + 1, para.T):
-        
+        #Diminishing step size
         step = para.stepsize/(iteration+1)
+
+        #Iterates over the first 784 dimensions of the weights
         for p in range(784):
-       #Communication 
+           #Communication 
            communication_w(w_nodes, neighbors, p, sess, para.b, screen = para.screen)
-       #node update using Adam    
+           #node update step    
            node_update_w(w_nodes, local_set, p, sess, stepsize=step)
            if p%200 == 199:  
                 
@@ -213,6 +223,7 @@ if __name__ == "__main__":
                 accuracy = [acc_test(node, test_data, test_label) for node in w_nodes]
                 print(accuracy)
                 save.append(accuracy)
+        #Iterates over the last 10 dimensions of the bias vector for our linear classifier
         for p in range(10):
             communication_b(w_nodes, neighbors, p, sess, para.b, screen = para.screen)
             node_update_b(w_nodes, local_set, p, sess, stepsize=step)
