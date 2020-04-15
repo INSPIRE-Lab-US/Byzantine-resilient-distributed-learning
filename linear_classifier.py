@@ -66,8 +66,10 @@ class linear_classifier:
         self.local_update_b = self.optimizer.apply_gradients([[self.gradient_port_b, self.b]])
 
    
-   
     def weights(self):
+        '''
+        Return list containing weight matrix and offset vector [W,b]
+        '''
         W = self.W.eval()
         b = self.b.eval()
 

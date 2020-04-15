@@ -11,6 +11,7 @@ def dimensionwise_median(g, b):
        screened_grad.append(sort[int(M/2)])
    
    return screened_grad
+
 def dimensionwise_trimmed_mean(g, b):
    M = len(g)
    if b >= M/2:
