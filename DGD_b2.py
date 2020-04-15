@@ -58,6 +58,15 @@ def gen_graph(nodes, con_rate, b=0):          # connecting rate between 1-100
     return w, graph   
 
 def get_neighbor(G):
+    '''
+    Returns a matrix where each row is a node and within each row the columns
+    contain the respective node's neighbors
+
+    ex. 3x3
+    0th: [0, 1, 2]
+    1st: [0, 1]
+    2nd: [0,2]
+    '''
     neighbor_list = []
     for node in G:
         neighbor = []
@@ -77,7 +86,8 @@ def one_hot(label):
 
 def Byzantine(target, strategy='random'):
     if strategy == 'random':
-        fal = np.random.rand(len(target)) * 10 + 5
+        #Creates a random array with values from a random uniform distribution [0,15)
+        fal = np.random.rand(*target.shape) * 10 + 5
     return fal
 
 
@@ -146,10 +156,17 @@ if __name__ == "__main__":
             accuracy = [acc_test(node, test_data, test_label) for node in w_nodes]
     #             print(accuracy)
             rec.append(np.mean(accuracy))
-            with open('./result/result_DGD_b2_%d.pickle'%ep, 'wb') as handle:
+            with open('./result/DGD/result_DGD_b2_%d.pickle'%ep, 'wb') as handle:
                 pickle.dump(rec, handle)
-            #node update using GD   
-            node_update(w_nodes, local_set, sess, stepsize=para.stepsize/(iteration+1))
+            #node update using GD
+            #Byzantine failed nodes
+            for byzant in range(para.b):
+                W_byz = Byzantine(w_nodes[byzant].weights()[0])
+                b_byz = Byzantine(w_nodes[byzant].weights()[1])
+
+                w_nodes[byzant].assign([W_byz,b_byz],sess)
+            
+            node_update(w_nodes[para.b:], local_set, sess, stepsize=para.stepsize/(iteration+1))
 
 
         sess.close()
