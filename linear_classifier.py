@@ -6,6 +6,8 @@ import tensorflow as tf
 import numpy as np
 
 def weight_variable(shape):
+    # Outputs a random matrix with mean 0 and stddev=0.1 from normal distribution
+    # ensures all the random values are within 2 std dev from the mean
     initial = tf.truncated_normal(shape, stddev=0.1)
     return tf.Variable(initial)
 
@@ -16,9 +18,13 @@ def bias_variable(shape):
 class linear_classifier:
     def __init__(self, stepsize=1e-4):
         
+        #Placeholder for our 784-dimensional data (MNIST data)
         self.x = tf.placeholder(tf.float32, shape=[None, 784])
+
+        #Placeholder for the output of our linear classifier y=W*x+b
         self.y_ = tf.placeholder(tf.float32, shape=[None, 10])
        
+       # Creates the random weights matrix and bias vector
         self.W = weight_variable([784, 10])
         self.b = bias_variable([10])
        
@@ -26,9 +32,15 @@ class linear_classifier:
         self.b_com = tf.placeholder(tf.float32, shape=[10])
        
         self.y_inf = tf.matmul(self.x, self.W) + self.b
+
+        #Cross entropy loss
         self.cross_entropy = tf.reduce_mean(
-   tf.nn.softmax_cross_entropy_with_logits(labels=self.y_, logits=self.y_inf))
+            tf.nn.softmax_cross_entropy_with_logits(labels=self.y_, logits=self.y_inf))
+
+        #L2 loss regularization parameters
         self.regularizer = tf.nn.l2_loss(self.W) + tf.nn.l2_loss(self.b)
+
+        #Objective/Loss function
         self.loss = self.cross_entropy + self.regularizer
         
         self.stepsize = tf.placeholder(tf.float32, shape=[])        

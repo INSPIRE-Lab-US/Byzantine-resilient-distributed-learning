@@ -75,6 +75,11 @@ def one_hot(label):
         l_oh.append(new_l)
     return l_oh
 
+def Byzantine(target, strategy='random'):
+    if strategy == 'random':
+        fal = np.random.rand(len(target)) * 10 + 5
+    return fal
+
 
 def initialization():
     sess = tf.InteractiveSession()
