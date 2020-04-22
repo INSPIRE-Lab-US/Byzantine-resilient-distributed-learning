@@ -9,7 +9,7 @@ import time
 import pickle
 import random
 from screening_method import Byzantine_algs
-
+import time
 
 class experiment_parameters:
     def __init__(self, agents, dataset, localsize_N, iteration, stepsize=1e-4, 
@@ -109,7 +109,7 @@ def Byzantine(target, strategy='random'):
     '''
     if strategy == 'random':
         #Creates a random array with values from a random uniform distribution [-1,0)
-        fal = np.random.random(*target.shape) - 1
+        fal = np.random.random(target.shape) - 1
     return fal
 
 
@@ -150,7 +150,6 @@ def communication(W, neighbor, sess, b=0, screen=False):
             neighborhood_b = neighborhood_b[b : -b]
         neighborhood_w = np.mean(neighborhood_w, axis = 0)
         neighborhood_b = np.mean(neighborhood_b, axis = 0)
-    #        print(neighborhood.shape)
         ave_w.append(neighborhood_w)
         ave_b.append(neighborhood_b)
 
@@ -169,6 +168,9 @@ if __name__ == "__main__":
         np.random.seed(30)
         
         for ep in range(10):
+            print(f'Monte Carlo {ep}')
+            start = time.time()
+
             para = experiment_parameters(agents=20, dataset='MNIST', localsize_N=2000, iteration=100,
                                         screen=False, b=2, Byzantine='random', stepsize = 1e-1)
             #Generate the graph
@@ -187,12 +189,14 @@ if __name__ == "__main__":
             rec = []
 
             for iteration in range(para.T):
+
                 #Communication 
                 communication(w_nodes, neighbors, sess, para.b, para.screen)
 
                 #test over all test data
                 accuracy = [acc_test(node, test_data, test_label) for node in w_nodes]
                 rec.append(np.mean(accuracy))
+                
                 with open('./result/DGD/result_DGD_b2_%d.pickle'%ep, 'wb') as handle:
                     pickle.dump(rec, handle)
                 
@@ -207,6 +211,9 @@ if __name__ == "__main__":
                 #Gradient Descent update for the remaining nodes
                 node_update(w_nodes[para.b:], local_set, sess, stepsize=para.stepsize/(iteration+1))
 
+            print(f'Monte Carlo {ep} done!')
+            end = time.time()
+            print(f'Time Elapsed {end-start} sec')
 
             sess.close()
 
