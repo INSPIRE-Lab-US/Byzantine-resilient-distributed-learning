@@ -1,6 +1,3 @@
-#   %%writefile Dec_BRIDGE.py
-# Decentralized learning with BRIDGE
-
 # Specify M nodes, N local samples, dataset, failure type, screening type, stepsize, connection rate, T iterations,
 # b Byzantine agents
 
@@ -27,8 +24,19 @@ class experiment_parameters:
         self.Byzantine = Byzantine
         self.con_rate = connection_rate
 
-def gen_graph(nodes, con_rate, b=0):          # connecting rate between 1-100
+def gen_graph(nodes, con_rate, b=0, min_neigh = 0):
+    '''
+    Generates the adjacency matrix for a graph
+
+    Args:
+        nodes: Number of vertices in the graph
+        con_rate: Connection rate of graph
+        b: Number of Byzantine nodes 
     
+    Returns:
+        w : Relative weight of each edge
+        graph: The adjacency matrix for the graph
+    '''
     re = 1                      # regenerate if graph assumption not satisfied
     while re:
         graph = []
@@ -53,7 +61,7 @@ def gen_graph(nodes, con_rate, b=0):          # connecting rate between 1-100
             d = sum(row)
             w[ind] = [col/d_max for col in row]
             w[ind][ind] = 1 - (d - 1) / d_max
-        if all([sum(row) >= 2 * b + 1 for row in graph]):
+        if all([sum(row) >= min_neigh for row in graph]):
             re = 0
     return w, graph   
 
@@ -62,10 +70,11 @@ def get_neighbor(G):
     Returns a matrix where each row is a node and within each row the columns
     contain the respective node's neighbors
 
-    ex. 3x3
-    0th: [0, 1, 2]
-    1st: [0, 1]
-    2nd: [0,2]
+    Args:
+        G: An adjacency matrix of a graph
+    
+    Returns:
+        neighbor_list: A matrix where the ith row contains the neighboring nodes of the ith node
     '''
     neighbor_list = []
     for node in G:
@@ -77,6 +86,9 @@ def get_neighbor(G):
     return neighbor_list
 
 def one_hot(label):
+    '''
+    Return ones hot encoding of label
+    '''
     l_oh = []
     for i in label:
         new_l = [0] * 10
@@ -85,9 +97,19 @@ def one_hot(label):
     return l_oh
 
 def Byzantine(target, strategy='random'):
+    '''
+    Byzantine update method
+
+    Arg:
+        target: The parameter of the node undergoing Byzantine failure
+        strategy: Method of failure
+    
+    Returns:
+        fal: A numpy array with same dimensions as the target
+    '''
     if strategy == 'random':
-        #Creates a random array with values from a random uniform distribution [0,15)
-        fal = np.random.rand(*target.shape) * 10 + 5
+        #Creates a random array with values from a random uniform distribution [-1,0)
+        fal = np.random.random(*target.shape) - 1
     return fal
 
 
@@ -107,6 +129,14 @@ def acc_test(model, t_data, t_label):
     return acc
     
 def communication(W, neighbor, sess, b=0, screen=False):
+    '''
+    Communicate the model (W,b) to all neighbors for each node
+
+    Args:
+        W: Nodes in our network
+        neighbor: A matrix where the ith row contains an array of the neighbors for the ith node
+
+    '''
     wb = [node.weights() for node in W]
     ave_w = []
     ave_b = []
@@ -134,39 +164,49 @@ def node_update(W, data, sess, stepsize=1e-3):
 
 
 if __name__ == "__main__":
-    for ep in range(10):
-        para = experiment_parameters(agents=20, dataset='MNIST', localsize_N=2000, iteration=1000,
-                                       screen=False, b=2, Byzantine='random', stepsize = 1e-1)
-        #Generate the graph
-        W_0, graph = gen_graph(para.M, para.con_rate, para.b)    
-        local_set, test_data, test_label = data_prep(para.dataset, para.M, para.N, one_hot=True)
-        neighbors = get_neighbor(graph)
-        #Initialization
-        tf.reset_default_graph()
-        w_nodes = [linear_classifier(stepsize = para.stepsize) for node in range(para.M)]    
-        sess = initialization()
-        rec = []
+        #Setting random seed for reproducibility
+        random.seed(a=30)
+        np.random.seed(30)
+        
+        for ep in range(10):
+            para = experiment_parameters(agents=20, dataset='MNIST', localsize_N=2000, iteration=100,
+                                        screen=False, b=2, Byzantine='random', stepsize = 1e-1)
+            #Generate the graph
+            W_0, graph = gen_graph(para.M, para.con_rate, para.b, min_neigh=4*para.b + 1)    
+            local_set, test_data, test_label = data_prep(para.dataset, para.M, para.N, one_hot=True)
+            neighbors = get_neighbor(graph)
 
-        for iteration in range(para.T):
-            #Communication 
-            communication(w_nodes, neighbors, sess, para.b, para.screen)
+            #Initialization
+            tf.reset_default_graph()
 
-    #         if iteration%10 == 0:            
-            #test over all test data
-            accuracy = [acc_test(node, test_data, test_label) for node in w_nodes]
-    #             print(accuracy)
-            rec.append(np.mean(accuracy))
-            with open('./result/DGD/result_DGD_b2_%d.pickle'%ep, 'wb') as handle:
-                pickle.dump(rec, handle)
-            #node update using GD
-            #Byzantine failed nodes
-            for byzant in range(para.b):
-                W_byz = Byzantine(w_nodes[byzant].weights()[0])
-                b_byz = Byzantine(w_nodes[byzant].weights()[1])
+            #To ensure reproducibility 
+            tf.set_random_seed(30+ep)
 
-                w_nodes[byzant].assign([W_byz,b_byz],sess)
-            
-            node_update(w_nodes[para.b:], local_set, sess, stepsize=para.stepsize/(iteration+1))
+            w_nodes = [linear_classifier(stepsize = para.stepsize) for node in range(para.M)]
+            sess = initialization()
+            rec = []
+
+            for iteration in range(para.T):
+                #Communication 
+                communication(w_nodes, neighbors, sess, para.b, para.screen)
+
+                #test over all test data
+                accuracy = [acc_test(node, test_data, test_label) for node in w_nodes]
+                rec.append(np.mean(accuracy))
+                with open('./result/DGD/result_DGD_b2_%d.pickle'%ep, 'wb') as handle:
+                    pickle.dump(rec, handle)
+                
+                #Node update using GD
+                #Byzantine failed nodes assigned first
+                for byzant in range(para.b):
+                    W_byz = Byzantine(w_nodes[byzant].weights()[0])
+                    b_byz = Byzantine(w_nodes[byzant].weights()[1])
+
+                    w_nodes[byzant].assign([W_byz,b_byz],sess)
+                
+                #Gradient Descent update for the remaining nodes
+                node_update(w_nodes[para.b:], local_set, sess, stepsize=para.stepsize/(iteration+1))
 
 
-        sess.close()
+            sess.close()
+
