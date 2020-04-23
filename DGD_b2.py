@@ -10,6 +10,7 @@ import pickle
 import random
 from screening_method import Byzantine_algs
 import time
+import sys
 
 class experiment_parameters:
     def __init__(self, agents, dataset, localsize_N, iteration, stepsize=1e-4, 
@@ -163,8 +164,12 @@ def node_update(W, data, sess, stepsize=1e-3):
 
 
 if __name__ == "__main__":
+
+        rand_trial = sys.argv[1]
+        with open(f'./result/DGD/rand{rand_trial}/rand_state{rand_trial}.pickle', 'wb') as handle:
+            pickle.dump(random.getstate(), handle)
+
         #Setting random seed for reproducibility
-        random.seed(a=30)
         np.random.seed(30)
         
         for ep in range(10):
@@ -197,7 +202,7 @@ if __name__ == "__main__":
                 accuracy = [acc_test(node, test_data, test_label) for node in w_nodes]
                 rec.append(np.mean(accuracy))
                 
-                with open('./result/DGD/result_DGD_b2_%d.pickle'%ep, 'wb') as handle:
+                with open(f'./result/DGD/rand{rand_trial}/result_DGD_b2_{ep}.pickle', 'wb') as handle:
                     pickle.dump(rec, handle)
                 
                 #Node update using GD
