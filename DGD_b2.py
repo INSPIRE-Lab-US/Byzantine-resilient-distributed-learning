@@ -109,8 +109,8 @@ def Byzantine(target, strategy='random'):
         fal: A numpy array with same dimensions as the target
     '''
     if strategy == 'random':
-        #Creates a random array with values from a random uniform distribution [-1,0)
-        fal = np.random.random(target.shape) - 1
+        #Creates a random array with values from a random uniform distribution [5,15)
+        fal = np.random.random(target.shape)*10 + 5
     return fal
 
 
@@ -176,7 +176,7 @@ if __name__ == "__main__":
             para = experiment_parameters(agents=20, dataset='MNIST', localsize_N=2000, iteration=100,
                                         screen=False, b=2, Byzantine='random', stepsize = 1e-1)
             #Generate the graph
-            W_0, graph = gen_graph(para.M, para.con_rate, para.b, min_neigh=2*para.b + 1)    
+            W_0, graph = gen_graph(para.M, para.con_rate, para.b, min_neigh=4*para.b + 1)    
             local_set, test_data, test_label = data_prep(para.dataset, para.M, para.N, one_hot=True)
             neighbors = get_neighbor(graph)
 
@@ -186,7 +186,7 @@ if __name__ == "__main__":
             #To ensure reproducibility 
             tf.set_random_seed(30+ep)
 
-            w_nodes = [linear_classifier(stepsize = para.stepsize) for node in range(para.M)]
+            w_nodes = [linear_classifier(stepsize = para.stepsize, sigma2=0.01) for node in range(para.M)]
             sess = initialization()
             rec = []
 
