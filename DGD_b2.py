@@ -165,12 +165,9 @@ def node_update(W, data, sess, stepsize=1e-3):
 
 if __name__ == "__main__":
 
-        rand_trial = sys.argv[1]
-        with open(f'./result/DGD/rand{rand_trial}/rand_state{rand_trial}.pickle', 'wb') as handle:
-            pickle.dump(random.getstate(), handle)
-
         #Setting random seed for reproducibility
         np.random.seed(30)
+        random.seed(a=30)
         
         for ep in range(10):
             print(f'Monte Carlo {ep}')
@@ -179,7 +176,7 @@ if __name__ == "__main__":
             para = experiment_parameters(agents=20, dataset='MNIST', localsize_N=2000, iteration=100,
                                         screen=False, b=2, Byzantine='random', stepsize = 1e-1)
             #Generate the graph
-            W_0, graph = gen_graph(para.M, para.con_rate, para.b, min_neigh=4*para.b + 1)    
+            W_0, graph = gen_graph(para.M, para.con_rate, para.b, min_neigh=2*para.b + 1)    
             local_set, test_data, test_label = data_prep(para.dataset, para.M, para.N, one_hot=True)
             neighbors = get_neighbor(graph)
 
@@ -202,7 +199,7 @@ if __name__ == "__main__":
                 accuracy = [acc_test(node, test_data, test_label) for node in w_nodes]
                 rec.append(np.mean(accuracy))
                 
-                with open(f'./result/DGD/rand{rand_trial}/result_DGD_b2_{ep}.pickle', 'wb') as handle:
+                with open(f'./result/DGD/result_DGD_b2_{ep}.pickle', 'wb') as handle:
                     pickle.dump(rec, handle)
                 
                 #Node update using GD
