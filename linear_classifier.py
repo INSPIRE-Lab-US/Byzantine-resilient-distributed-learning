@@ -5,10 +5,10 @@
 import tensorflow as tf
 import numpy as np
 
-def weight_variable(shape):
+def weight_variable(shape, std_dev):
     # Outputs a random matrix with mean 0 and stddev=0.1 from normal distribution
     # ensures all the random values are within 2 std dev from the mean
-    initial = tf.truncated_normal(shape, stddev=0.1)
+    initial = tf.truncated_normal(shape, stddev=std_dev)
     return tf.Variable(initial)
 
 def bias_variable(shape):
@@ -16,7 +16,7 @@ def bias_variable(shape):
     return tf.Variable(initial)
 
 class linear_classifier:
-    def __init__(self, stepsize=1e-4):
+    def __init__(self, stepsize=1e-4, sigma2 = 0.1):
         
         #Placeholder for our 784-dimensional data (MNIST data)
         self.x = tf.placeholder(tf.float32, shape=[None, 784])
@@ -45,19 +45,20 @@ class linear_classifier:
         
         self.stepsize = tf.placeholder(tf.float32, shape=[])        
         self.optimizer = tf.train.GradientDescentOptimizer(self.stepsize)
-#         self.optimizer = tf.train.AdamOptimizer(stepsize)      
+        #self.optimizer = tf.train.AdamOptimizer(stepsize)      
         self.train_step = self.optimizer.minimize(self.loss)
         self.correct_prediction = tf.equal(tf.argmax(self.y_inf,1), tf.argmax(self.y_,1))
         self.accuracy = tf.reduce_mean(tf.cast(self.correct_prediction, tf.float32))        
        
-       #Collection of variables
+        #Collection of variables
         self.layers = [self.W, self.b]    
         self.communication_ports = [self.W_com, self.b_com]
         
        
-       #assign for communication
+        #assign for communication
         self.communication = [var.assign(port) for var, port in zip(self.layers, self.communication_ports)]
-       #separate for 1-d update
+       
+        #separate for 1-d update
         self.gradient_w = self.optimizer.compute_gradients(loss = self.cross_entropy, var_list = [self.W])[0][0]
         self.gradient_b = self.optimizer.compute_gradients(loss = self.cross_entropy, var_list = [self.b])[0][0]
         self.gradient_port_w = tf.placeholder(tf.float32, shape=[784, 10])
