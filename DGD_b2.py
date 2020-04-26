@@ -110,7 +110,7 @@ def Byzantine(target, strategy='random'):
     '''
     if strategy == 'random':
         #Creates a random array with values from a random uniform distribution [5,15)
-        fal = np.random.random(target.shape)*10 + 5
+        fal = np.random.random(target.shape)*20 + 5
     return fal
 
 
