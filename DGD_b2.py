@@ -186,7 +186,7 @@ if __name__ == "__main__":
             #To ensure reproducibility 
             tf.set_random_seed(30+ep)
 
-            w_nodes = [linear_classifier(stepsize = para.stepsize, sigma2=0.01) for node in range(para.M)]
+            w_nodes = [linear_classifier(stepsize = para.stepsize) for node in range(para.M)]
             sess = initialization()
             rec = []
 
