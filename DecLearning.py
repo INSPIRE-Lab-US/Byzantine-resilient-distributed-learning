@@ -2,10 +2,11 @@ import random
 import numpy as np
 import tensorflow as tf
 from screening_method import Byzantine_algs
+from linear_classifier import linear_classifier
 
 
 class DecLearning:
-    def __init__(self,dataset, nodes, iterations, byzantine, local_samples, con_rate):
+    def __init__(self,dataset = 'MNIST', nodes = 20, iterations = 100, byzantine = 0, local_samples = 2000, con_rate = 50, stepsize = 1e-1):
         self.dataset = dataset
         self.M = nodes
         self.T = iterations
@@ -14,6 +15,7 @@ class DecLearning:
         self.con_rate = con_rate
         self.graph  = []
         self.edge_weight = []
+        self.stepsize = stepsize
     
     def gen_graph(self, min_neigh = 0):
         '''
@@ -38,7 +40,7 @@ class DecLearning:
                 graph[row].append(1)
                 for col in range(row + 1, nodes):
                     d = random.randint(1, 100)
-                    if d < con_rate:
+                    if d < self.con_rate:
                         graph[row].append(1)     #form symmetric matrix row by row
                         graph[col].append(1)
                     else:
@@ -63,9 +65,6 @@ class DecLearning:
         Returns a matrix where each row is a node and within each row the columns
         contain the respective node's neighbors
 
-        Args:
-            G: An adjacency matrix of a graph
-        
         Returns:
             neighbor_list: A matrix where the ith row contains the neighboring nodes of the ith node
         '''
@@ -102,8 +101,8 @@ class DecLearning:
             fal: A numpy array with same dimensions as the target
         '''
         if strategy == 'random':
-            #Creates a random array with values from a random uniform distribution [5,15)
-            fal = np.random.random(target.shape)*20 + 5
+            #Creates a random array with values from a random uniform distribution [-1,0)
+            fal = np.random.random(target.shape) - 1
         return fal
 
     def initialization(self):
@@ -150,7 +149,8 @@ class DecLearning:
         for node, w, b in zip(W, ave_w, ave_b):
             node.assign([w, b], sess) 
     
-    def communication_w(self, W, neighbor, p, sess, b=0, screen=False):
+    #Used for ByRDiE
+    def communication_w(self, W, neighbor, p, sess, b=0, screen=False, goByzantine = False):
         '''
         Communicate the dimension p of model W to all neighbors for each node, updates
         b nodes using Byzantine update
@@ -171,10 +171,11 @@ class DecLearning:
         #Bias vector from each node
         _b = [node.weights()[1] for node in W]
         
+
         #Byzantine failure
-        for node in range(b):
-            #Set to a random number [-1,0)
-            _w[node][p] = Byzantine(_w[node][p])
+        if goByzantine:
+            for node in range(b):
+                _w[node][p] = self.Byzantine(_w[node][p])
 
         ave = []
 
@@ -203,37 +204,54 @@ class DecLearning:
             node.assign([ww.reshape([784, 10]), bb], sess) 
 
 
+    def communication_b(self, W, neighbor, p, sess, b=0, screen=False, goByzantine=False):
+        '''
+        Communicate the model b to all neighbors for each node
+
+        Args:
+            W: Nodes in our network
+            neighbor: A matrix where the ith row contains an array of the neighbors for the ith node
+
+        '''
+        _w = [node.weights()[0] for node in W]
+        _b = [node.weights()[1] for node in W]
+        
+        #Byzantine failure
+        if goByzantine:
+            for node in range(b):
+                #Set to a random number [-1,0)
+                _b[node][p] = self.Byzantine(_b[node][p])
+
+        ave = []
+        for neighbor_list in neighbor:
+            neighborhood = [_b[n][p] for n in neighbor_list]
+
+            if screen:
+                neighborhood = np.sort(neighborhood, axis = 0)
+                neighborhood = neighborhood[b : -b]
+            neighborhood = np.mean(neighborhood, axis = 0)
+        #        print(neighborhood.shape)
+            ave.append(neighborhood)
+        for scalar, node in zip(ave, _b):
+            node[p] = scalar
+
+        for node, ww, bb in zip(W, _w, _b):
+            node.assign([ww, bb], sess) 
+
     def node_update(self, W, data, sess, stepsize=1e-3):        
         for model, sample, label in zip(W, data.dist_data, data.dist_label):
             sess.run(model.train_step, feed_dict={model.x: sample, model.y_: label, model.stepsize: stepsize})
-
-'''  
-Member Variables:
-graph Adjacency matrix, for generated graph
-dataset
-M (# of agents)
-T (iterations)
-screen
-b (# of Byzantine nodes)
-N (# of local data samples for each node)
-con_rate (connection rate of the graph)
-
-
-Methods 'private':
-gen_graph(neigh_cond)- Generates the graph associated with this decentralized learning scheme and sets the adjacency matrix for this instance of decentralized learning, also accepts the restriction on # of neighbors for each node
-get_neighbors() - Returns a 2D array with the neighbors for each node in the graph
-one_hot() - Performs one hot encoding of the labels
-Byzantine() - Sends a byzantine update
-
-(For BRIDGE)
-communication() - A method that communicates to ALL the neighbors of each node this is as in DGD and BRIDGE
-
-(For ByRDiE)
-communication_w(p) - A method that communicates a particular dimension of W to all the nodes
-communication_b(p) - A method that communicates a particular dimension of b to all the nodes
-
-Methods 'public':
-ByRDiE(step_size) - Learns the model using the simulated ByRDiE algorithm
-BRIDGE(screen_method, step_size) - Learns the model using the simulated BRIDGE algo
-DGD(step_size) - Learns the model using regular DGD
-'''
+    
+    def node_update_w(self, W, data, p, sess, stepsize=1e-4):        
+        for model, sample, label in zip(W, data.dist_data, data.dist_label):
+            g = sess.run(model.gradient_w, feed_dict={model.x: sample, model.y_: label, model.stepsize: stepsize})
+            new_g = np.zeros([7840, 1])
+            new_g[p] = g.reshape([7840, 1])[p]
+            sess.run(model.local_update_w, feed_dict={model.gradient_port_w: new_g.reshape([784,10]), model.stepsize: stepsize})
+        
+    def node_update_b(self, W, data, p, sess, stepsize=1e-4):        
+        for model, sample, label in zip(W, data.dist_data, data.dist_label):
+            g = sess.run(model.gradient_b, feed_dict={model.x: sample, model.y_: label, model.stepsize: stepsize})
+            new_g = np.zeros([10])
+            new_g[p] = g[p]
+            sess.run(model.local_update_b, feed_dict={model.gradient_port_b: new_g, model.stepsize: stepsize})
