@@ -25,7 +25,7 @@ class linear_classifier:
         self.y_ = tf.placeholder(tf.float32, shape=[None, 10])
        
        # Creates the random weights matrix and bias vector
-        self.W = weight_variable([784, 10])
+        self.W = weight_variable([784, 10], std_dev=sigma2)
         self.b = bias_variable([10])
        
         self.W_com = tf.placeholder(tf.float32, shape=[784, 10])
