@@ -148,6 +148,10 @@ if __name__ == "__main__":
     neighbors = get_neighbor(graph)
     #Initialization
     tf.reset_default_graph()
+
+    #To ensure reproducibility 
+    tf.set_random_seed(30+ep)
+
     w_nodes = [linear_classifier(stepsize = para.stepsize) for node in range(para.M)]    
     sess = initialization()
     rec = []
