@@ -16,8 +16,8 @@ import sys
 
 start = time.time()
 
-monte_trial = sys.argv[1]
-print(f'Starting Monte Carlo trial {monte_trial}')
+monte_trial = int(sys.argv[1])
+print(f'Starting Monte Carlo trial {monte_trial}', flush=True)
 
 #Decentralized Learning object
 para = DecLearning(dataset='MNIST', nodes=20,  iterations=100, byzantine = 2, local_samples=2000, 
@@ -70,8 +70,7 @@ for iteration in range(para.T):
         para.node_update_b(w_nodes, local_set, dim, sess, stepsize=step)
     
     accuracy = [para.acc_test(node, test_data, test_label) for node in w_nodes]
-    print(accuracy)
-    print(iteration)
+    print(f'Accuracy for iteration {iteration} is {accuracy}', flush = True)
     save.append(accuracy)
     with open('./result/ByRDiE_b2_%d.pickle'%monte_trial, 'wb') as handle:
         pickle.dump(save, handle) 
@@ -79,4 +78,4 @@ for iteration in range(para.T):
 sess.close()
 
 end = time.time()
-print(f'Time elapsed {end-start}')
+print(f'Time elapsed {end-start}', flush=True)

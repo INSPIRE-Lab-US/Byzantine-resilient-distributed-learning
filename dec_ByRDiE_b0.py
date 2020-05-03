@@ -16,8 +16,8 @@ import sys
 
 start = time.time()
 
-monte_trial = sys.argv[1]
-print(f'Starting Monte Carlo trial {monte_trial}')
+monte_trial = int(sys.argv[1])
+print(f'Starting Monte Carlo trial {monte_trial}', flush = True)
 
 #Setting random seed for reproducibility
 random.seed(a=30+monte_trial)
@@ -27,7 +27,7 @@ np.random.seed(30+monte_trial)
 para = DecLearning(dataset = 'MNIST', nodes=20, iterations=100, byzantine=2, local_samples=2000, 
                               con_rate=50, stepsize = 1e-1)
 #Generate the graph
-W_0, graph = para.gen_graph(min_neigh = 4*para.b+1)    
+para.gen_graph(min_neigh = 4*para.b+1)    
 local_set, test_data, test_label = data_prep(para.dataset, para.M, para.N, one_hot=True)
 neighbors = para.get_neighbor()
 
@@ -57,7 +57,7 @@ for iteration in range(para.T):
         if p_w%200 == 199:            
             #test over all test data
             accuracy = [para.acc_test(node, test_data, test_label) for node in w_nodes]
-            print(accuracy)
+            print(accuracy, flush = True)
             save.append(accuracy)
     
     for p_b in range(10):
@@ -66,8 +66,7 @@ for iteration in range(para.T):
     
 
     accuracy = [para.acc_test(node, test_data, test_label) for node in w_nodes]
-    print(f'Accuracy for iteration {iteration} is {accuracy}')
-    print(f'Total scalar broadcasts = {(iteration+1)*(p_w+p_b)}')
+    print(f'Accuracy for iteration {iteration} is {accuracy}', flush = True)
     save.append(accuracy)
 
     with open('./result/ByRDiE/ByRDiE_b0_%d.pickle'%monte_trial, 'wb') as handle:
