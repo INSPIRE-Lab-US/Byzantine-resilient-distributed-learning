@@ -118,13 +118,29 @@ class DecLearning:
         screened = Byzantine_algs[method](grad, b)
         return screened
     
+    def Median(self, W, neighbor, wb, b):
+        ave_w = []
+        ave_b = []
+        for neighbor_list in neighbor:
+            neighborhood_w = [wb[n][0] for n in neighbor_list]
+            neighborhood_b = [wb[n][1] for n in neighbor_list] 
+
+            neighborhood_w = np.median(neighborhood_w, axis = 0)
+            neighborhood_b = np.median(neighborhood_b, axis = 0)
+            
+            ave_w.append(neighborhood_w)
+            ave_b.append(neighborhood_b)
+               
+        return ave_w, ave_b
+    
     def acc_test(self, model, t_data, t_label):
         acc = model.accuracy.eval(feed_dict={
                 model.x:t_data, model.y_: t_label,})
         return acc
 
     #Used for DGD and BRIDGE
-    def communication(self, W, neighbor, sess, b=0, screen=False, goByzantine = False):
+    def communication(self, W, neighbor, sess, b=0, screen=False, 
+                    goByzantine = False, screenMethod = 'BRIDGE'):
         '''
         Communicate the model (W,b) to all neighbors for each node
 
@@ -136,18 +152,28 @@ class DecLearning:
         wb = [node.weights() for node in W]
         ave_w = []
         ave_b = []
-        for neighbor_list in neighbor:
-            neighborhood_w = [wb[n][0] for n in neighbor_list]
-            neighborhood_b = [wb[n][1] for n in neighbor_list] 
-            if screen:
-                neighborhood_w = np.sort(neighborhood_w, axis = 0) 
-                neighborhood_w = neighborhood_w[b : -b]
-                neighborhood_b = np.sort(neighborhood_b, axis = 0)
-                neighborhood_b = neighborhood_b[b : -b]
-            neighborhood_w = np.mean(neighborhood_w, axis = 0)
-            neighborhood_b = np.mean(neighborhood_b, axis = 0)
-            ave_w.append(neighborhood_w)
-            ave_b.append(neighborhood_b)
+
+        if goByzantine:
+            #Byzantine failed nodes assigned first
+            for byzant in range(b):
+                wb[byzant][0] = self.Byzantine(wb[byzant][0])
+                wb[byzant][1] = self.Byzantine(wb[byzant][1])
+
+        if screen and screenMethod == 'Median':
+            ave_w, ave_b = self.Median(W, neighbor, wb, b)
+        else:
+            for neighbor_list in neighbor:
+                neighborhood_w = [wb[n][0] for n in neighbor_list]
+                neighborhood_b = [wb[n][1] for n in neighbor_list] 
+                if screen:
+                    neighborhood_w = np.sort(neighborhood_w, axis = 0) 
+                    neighborhood_w = neighborhood_w[b : -b]
+                    neighborhood_b = np.sort(neighborhood_b, axis = 0)
+                    neighborhood_b = neighborhood_b[b : -b]
+                neighborhood_w = np.mean(neighborhood_w, axis = 0)
+                neighborhood_b = np.mean(neighborhood_b, axis = 0)
+                ave_w.append(neighborhood_w)
+                ave_b.append(neighborhood_b)
 
         for node, w, b in zip(W, ave_w, ave_b):
             node.assign([w, b], sess) 
