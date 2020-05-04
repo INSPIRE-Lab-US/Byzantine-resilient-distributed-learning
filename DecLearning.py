@@ -124,7 +124,7 @@ class DecLearning:
         return acc
 
     #Used for DGD and BRIDGE
-    def communication(self, W, neighbor, sess, b=0, screen=False):
+    def communication(self, W, neighbor, sess, b=0, screen=False, goByzantine = False):
         '''
         Communicate the model (W,b) to all neighbors for each node
 
@@ -222,7 +222,6 @@ class DecLearning:
         #Byzantine failure
         if goByzantine:
             for node in range(b):
-                #Set to a random number [-1,0)
                 _b[node][p] = self.Byzantine(_b[node][p])
 
         ave = []
