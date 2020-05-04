@@ -6,7 +6,8 @@ from linear_classifier import linear_classifier
 
 
 class DecLearning:
-    def __init__(self,dataset = 'MNIST', nodes = 20, iterations = 100, byzantine = 0, local_samples = 2000, con_rate = 50, stepsize = 1e-1):
+    def __init__(self,dataset = 'MNIST', nodes = 20, iterations = 100, byzantine = 0, 
+                    local_samples = 2000, con_rate = 50, stepsize = 1e-1):
         self.dataset = dataset
         self.M = nodes
         self.T = iterations
@@ -89,7 +90,7 @@ class DecLearning:
             l_oh.append(new_l)
         return l_oh
 
-    def Byzantine(self, target, strategy='random'):
+    def Byzantine(self, target, strategy='random', interval = (-1,0)):
         '''
         Byzantine update method
 
@@ -101,8 +102,10 @@ class DecLearning:
             fal: A numpy array with same dimensions as the target
         '''
         if strategy == 'random':
+            dist = interval[1] - interval[0]
+            min = interval[0]
             #Creates a random array with values from a random uniform distribution [-1,0)
-            fal = np.random.random(target.shape) - 1
+            fal = np.random.random(target.shape) * dist + min
         return fal
 
     def initialization(self):
