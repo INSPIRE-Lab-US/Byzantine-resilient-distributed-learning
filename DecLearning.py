@@ -118,6 +118,7 @@ class DecLearning:
         screened = Byzantine_algs[method](grad, b)
         return screened
     
+    #The new grad W and grad b vectors for each node are set to the median of all their neighbors
     def Median(self, W, neighbor, wb, b):
         ave_w = []
         ave_b = []
@@ -133,6 +134,35 @@ class DecLearning:
                
         return ave_w, ave_b
     
+    def Krum(self, W, neighbor, wb, b):
+        ave_w = []
+        ave_b = []
+        for neighbor_list in neighbor:
+            score_w = []
+            score_b = []
+
+            neighborhood_w = [wb[n][0] for n in neighbor_list]
+            neighborhood_b = [wb[n][1] for n in neighbor_list]
+
+            for g_w, g_b in zip(neighborhood_w, neighborhood_b):
+                dist_w = [np.abs(other-g_w) for other in neighborhood_w]
+                dist_b = [np.abs(other-g_b) for other in neighborhood_b]
+
+                dist_w = np.sort(dist_w)
+                dist_b = np.sort(dist_b)
+
+                score_w.append(np.sum(dist_w[:(len(neighborhood_w) - b - 2)]))
+                score_b.append(np.sum(dist_b[:(len(neighborhood_b) - b - 2)]))
+            
+            ind_w = score_w.index(min(score_w))
+            ind_b = score_b.index(min(score_b))
+
+            smallest_score_neigh_w = neighbor_list[ind_w]
+            smallest_score_neigh_b = neighbor_list[ind_b]
+
+            ave_w.append(wb[smallest_score_neigh_w][0])
+            ave_b.append(wb[smallest_score_neigh_b][1])
+
     def acc_test(self, model, t_data, t_label):
         acc = model.accuracy.eval(feed_dict={
                 model.x:t_data, model.y_: t_label,})
@@ -161,6 +191,9 @@ class DecLearning:
 
         if screen and screenMethod == 'Median':
             ave_w, ave_b = self.Median(W, neighbor, wb, b)
+        if screen and screenMethod == 'Krum':
+            ave_w, ave_b = self.Krum(W, neighbor, wb, b)
+        #Perform vanilla BRIDGE screening
         else:
             for neighbor_list in neighbor:
                 neighborhood_w = [wb[n][0] for n in neighbor_list]
