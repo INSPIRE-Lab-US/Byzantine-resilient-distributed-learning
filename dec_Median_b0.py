@@ -47,7 +47,7 @@ for iteration in range(para.T):
         
     #test over all test data
     accuracy = [para.acc_test(node, test_data, test_label) for node in w_nodes]
-    print(f'Accuracy for iteration {iteration} is {accuracy}')
+    print(f'Accuracy for iteration {iteration} is {accuracy}', flush=True)
     save.append(np.mean(accuracy))
     
     #node update using GD   
@@ -56,6 +56,6 @@ for iteration in range(para.T):
 
 sess.close()
 end = time.time()
-print(f'Monte Carlo {monte_trial} Done!\n Time elapsed {end-start} seconds\n')
-with open(f'./result/BRIDGE/result_Median_faultless_{monte_trial}.pickle', 'wb') as handle:
+print(f'Monte Carlo {monte_trial} Done!\n Time elapsed {end-start} seconds\n', flush=True)
+with open(f'./result/Median/result_Median_faultless_{monte_trial}.pickle', 'wb') as handle:
     pickle.dump(save, handle)
