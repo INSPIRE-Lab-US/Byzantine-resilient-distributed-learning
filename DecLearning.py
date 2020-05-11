@@ -135,6 +135,9 @@ class DecLearning:
         return ave_w, ave_b
     
     def Krum(self, W, neighbor, wb, b):
+        '''
+        Perform Krum screening 
+        '''
         ave_w = []
         ave_b = []
         for neighbor_list in neighbor:
@@ -145,8 +148,8 @@ class DecLearning:
             neighborhood_b = [wb[n][1] for n in neighbor_list]
 
             for g_w, g_b in zip(neighborhood_w, neighborhood_b):
-                dist_w = [np.norm(other-g_w) for other in neighborhood_w]
-                dist_b = [np.norm(other-g_b) for other in neighborhood_b]
+                dist_w = [np.linalg.norm(other-g_w) for other in neighborhood_w]
+                dist_b = [np.linalg.norm(other-g_b) for other in neighborhood_b]
 
                 dist_w = np.sort(dist_w)
                 dist_b = np.sort(dist_b)
