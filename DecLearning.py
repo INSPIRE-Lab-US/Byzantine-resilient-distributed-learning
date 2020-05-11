@@ -183,8 +183,8 @@ class DecLearning:
         return acc
 
     #Used for DGD and BRIDGE
-    def communication(self, W, neighbor, sess, b=0, screen=False, 
-                    goByzantine = False, screenMethod = 'BRIDGE'):
+    def communication(self, W, neighbor, sess, b=0, 
+                    goByzantine = False, screenMethod = None):
         '''
         Communicate the model (W,b) to all neighbors for each node
 
@@ -203,16 +203,17 @@ class DecLearning:
                 wb[byzant][0] = self.Byzantine(wb[byzant][0])
                 wb[byzant][1] = self.Byzantine(wb[byzant][1])
 
-        if screen and screenMethod == 'Median':
+        if screenMethod == 'Median':
             ave_w, ave_b = self.Median(W, neighbor, wb, b)
-        if screen and screenMethod == 'Krum':
+        if screenMethod == 'Krum':
             ave_w, ave_b = self.Krum(neighbor, wb, b)
-        #Perform vanilla BRIDGE screening
         else:
             for neighbor_list in neighbor:
                 neighborhood_w = [wb[n][0] for n in neighbor_list]
                 neighborhood_b = [wb[n][1] for n in neighbor_list] 
-                if screen:
+                
+                #Perform vanilla BRIDGE screening
+                if screenMethod == 'BRIDGE':
                     neighborhood_w = np.sort(neighborhood_w, axis = 0) 
                     neighborhood_w = neighborhood_w[b : -b]
                     neighborhood_b = np.sort(neighborhood_b, axis = 0)
