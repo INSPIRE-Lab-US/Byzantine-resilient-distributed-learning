@@ -83,6 +83,11 @@ for iteration in range(para.T):
 
 sess.close()
 end = time.time()
+if b!=0 and goByzantine:
+    filename = f'./result/{dec_method}/result_{dec_method}_b{b}_{monte_trial}.pickle'
+else:
+    filename = f'./result/{dec_method}/result_{dec_method}_b{b}_faultless_{monte_trial}.pickle'
+
 print(f'Monte Carlo {monte_trial} Done!\n Time elapsed {end-start} seconds\n')
-with open(f'./result/{dec_method}/result_{dec_method}_b{b}_{monte_trial}.pickle', 'wb') as handle:
+with open(filename, 'wb') as handle:
     pickle.dump(save, handle)
