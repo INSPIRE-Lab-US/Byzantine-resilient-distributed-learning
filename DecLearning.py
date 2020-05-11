@@ -145,8 +145,8 @@ class DecLearning:
             neighborhood_b = [wb[n][1] for n in neighbor_list]
 
             for g_w, g_b in zip(neighborhood_w, neighborhood_b):
-                dist_w = [np.abs(other-g_w) for other in neighborhood_w]
-                dist_b = [np.abs(other-g_b) for other in neighborhood_b]
+                dist_w = [np.norm(other-g_w) for other in neighborhood_w]
+                dist_b = [np.norm(other-g_b) for other in neighborhood_b]
 
                 dist_w = np.sort(dist_w)
                 dist_b = np.sort(dist_b)
@@ -162,6 +162,7 @@ class DecLearning:
 
             ave_w.append(wb[smallest_score_neigh_w][0])
             ave_b.append(wb[smallest_score_neigh_b][1])
+        return ave_w, ave_b
 
     def acc_test(self, model, t_data, t_label):
         acc = model.accuracy.eval(feed_dict={
