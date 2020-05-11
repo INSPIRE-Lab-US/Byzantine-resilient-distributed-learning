@@ -104,7 +104,7 @@ class DecLearning:
         if strategy == 'random':
             dist = interval[1] - interval[0]
             min = interval[0]
-            #Creates a random array with values from a random uniform distribution [-1,0)
+            #Creates a random array with values from a random uniform distribution
             fal = np.random.random(target.shape) * dist + min
         return fal
 
@@ -198,10 +198,14 @@ class DecLearning:
         ave_b = []
 
         if goByzantine:
+            if screenMethod==None:
+                byz_range = (5,25)
+            else:
+                byz_range=(-1,0)
             #Byzantine failed nodes assigned first
             for byzant in range(b):
-                wb[byzant][0] = self.Byzantine(wb[byzant][0])
-                wb[byzant][1] = self.Byzantine(wb[byzant][1])
+                wb[byzant][0] = self.Byzantine(wb[byzant][0], interval=byz_range)
+                wb[byzant][1] = self.Byzantine(wb[byzant][1], interval=byz_range)
 
         if screenMethod == 'Median':
             ave_w, ave_b = self.Median(W, neighbor, wb, b)
