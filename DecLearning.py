@@ -134,12 +134,22 @@ class DecLearning:
                
         return ave_w, ave_b
     
-    def Krum(self, W, neighbor, wb, b):
+    def Krum(self,neighbor, wb, b):
         '''
-        Perform Krum screening 
+        Perform Krum screening
+
+        Args:
+        neighbor: 2D list of neighbors for each node
+        wb: List with W matrix and b vector for each node
+        b: Number of byzantine nodes
+
+        Returns:
+        new_w: List of W matrix for each node based on Krum screening
+        new_b: List of b vector for each node based on Krum screening
         '''
-        ave_w = []
-        ave_b = []
+        new_w = []
+        new_b = []
+
         for neighbor_list in neighbor:
             score_w = []
             score_b = []
@@ -163,9 +173,9 @@ class DecLearning:
             smallest_score_neigh_w = neighbor_list[ind_w]
             smallest_score_neigh_b = neighbor_list[ind_b]
 
-            ave_w.append(wb[smallest_score_neigh_w][0])
-            ave_b.append(wb[smallest_score_neigh_b][1])
-        return ave_w, ave_b
+            new_w.append(wb[smallest_score_neigh_w][0])
+            new_b.append(wb[smallest_score_neigh_b][1])
+        return new_w, new_b
 
     def acc_test(self, model, t_data, t_label):
         acc = model.accuracy.eval(feed_dict={
@@ -196,7 +206,7 @@ class DecLearning:
         if screen and screenMethod == 'Median':
             ave_w, ave_b = self.Median(W, neighbor, wb, b)
         if screen and screenMethod == 'Krum':
-            ave_w, ave_b = self.Krum(W, neighbor, wb, b)
+            ave_w, ave_b = self.Krum(neighbor, wb, b)
         #Perform vanilla BRIDGE screening
         else:
             for neighbor_list in neighbor:
