@@ -28,6 +28,11 @@ if args.byzantine:
 else:
     b = 0
 
+if args.goByzantine:
+    goByzantine=args.goByzantine
+else:
+    goByzantine = False
+
 if args.screening:
     screen_method = args.screening
     dec_method = screen_method
@@ -63,7 +68,8 @@ sess = para.initialization()
 #BRIDGE Algorithm
 for iteration in range(para.T):
     #Communication 
-    para.communication(w_nodes, neighbors, sess, b = para.b, screenMethod=screen_method)
+    para.communication(w_nodes, neighbors, sess, b = para.b, 
+                        goByzantine = goByzantine ,screenMethod=screen_method)
     
         
     #test over all test data
