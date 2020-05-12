@@ -3,6 +3,8 @@ __pycache__/
 infimnist/
 slurmScripts/
 *.ipynb
+*.pdf
+*.png
 .ipynb_checkpoints
 infimnist.tar.gz
 t10k-images-idx3-ubyte
