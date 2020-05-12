@@ -92,3 +92,4 @@ print(f'Monte Carlo {monte_trial} Done!\n Time elapsed {end-start} seconds\n', f
 
 with open(filename, 'wb') as handle:
     pickle.dump(save, handle)
+    pickle.dump(w_nodes, handle)
