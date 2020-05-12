@@ -2,6 +2,7 @@
 __pycache__/
 infimnist/
 slurmScripts/
+original_results/
 *.ipynb
 *.pdf
 *.png
