@@ -84,8 +84,11 @@ for iteration in range(para.T):
     #node update using GD   
     para.node_update(w_nodes, local_set, sess, stepsize=para.stepsize/(iteration+1))
 
+#Save final learned parameters
+wb = [node.weights() for node in w_nodes]
 
 sess.close()
+
 end = time.time()
 if b!=0 and goByzantine:
     filename = f'./result/{dec_method}/result_{dec_method}_b{b}_{monte_trial}.pickle'
@@ -93,8 +96,6 @@ else:
     filename = f'./result/{dec_method}/result_{dec_method}_b{b}_faultless_{monte_trial}.pickle'
 
 print(f'Monte Carlo {monte_trial} Done!\n Time elapsed {end-start} seconds\n', flush=True)
-
-wb = [node.weights() for node in w_nodes]
 
 with open(filename, 'wb') as handle:
     pickle.dump(save, handle)
