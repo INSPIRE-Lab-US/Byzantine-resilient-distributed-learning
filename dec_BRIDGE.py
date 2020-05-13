@@ -1,5 +1,9 @@
-# Decentralized learning with BRIDGE
-# The BRIDGE Algo assumes 2 Byzantine nodes but no nodes in the network actually undergo Byzantine failure
+'''
+Decentralized Learning with BRIDGE
+
+Run this script by specifying the number of Byzantine nodes, whether they should actually be faulty, and the screening method to defend against them
+Run this 10 times setting monte_trial to 0-9 to reproduce the results
+'''
 
 import numpy as np
 from pre_proc import data_prep
@@ -90,6 +94,8 @@ else:
 
 print(f'Monte Carlo {monte_trial} Done!\n Time elapsed {end-start} seconds\n', flush=True)
 
+wb = [node.weight() for node in w_nodes]
+
 with open(filename, 'wb') as handle:
     pickle.dump(save, handle)
-    pickle.dump(w_nodes, handle)
+    pickle.dump(wb, handle)
