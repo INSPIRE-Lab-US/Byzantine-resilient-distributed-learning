@@ -92,9 +92,9 @@ sess.close()
 
 end = time.time()
 if b!=0 and goByzantine:
-    filename = f'./result/{dec_method}/result_{dec_method}_b{b}_{std_devW}.pickle'
+    filename = f'./result/Krum_diffInitials/result_{dec_method}_b{b}_{std_devW}.pickle'
 else:
-    filename = f'./result/{dec_method}/result_{dec_method}_b{b}_faultless_{std_devW}.pickle'
+    filename = f'./result/Krum_diffInitials/result_{dec_method}_b{b}_faultless_{std_devW}.pickle'
 
 print(f'W matrix with {std_devW} Done!\n Time elapsed {end-start} seconds\n', flush=True)
 
