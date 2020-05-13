@@ -94,7 +94,7 @@ else:
 
 print(f'Monte Carlo {monte_trial} Done!\n Time elapsed {end-start} seconds\n', flush=True)
 
-wb = [node.weight() for node in w_nodes]
+wb = [node.weights() for node in w_nodes]
 
 with open(filename, 'wb') as handle:
     pickle.dump(save, handle)
