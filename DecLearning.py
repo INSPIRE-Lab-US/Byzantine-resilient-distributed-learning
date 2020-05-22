@@ -139,24 +139,26 @@ class DecLearning:
         Perform Krum screening
 
         Args:
-        neighbor: 2D list of neighbors for each node
-        wb: List with W matrix and b vector for each node
-        b: Number of byzantine nodes
+            neighbor: 2D list of neighbors for each node
+            wb: List with W matrix and b vector for each node
+            b: Number of byzantine nodes
 
         Returns:
-        new_w: List of W matrix for each node based on Krum screening
-        new_b: List of b vector for each node based on Krum screening
+            new_w: List of W matrix for each node based on Krum screening
+            new_b: List of b vector for each node based on Krum screening
         '''
         new_w = []
         new_b = []
 
-        for neighbor_list in neighbor:
+        #Krum screening for each node
+        for i,neighbor_list in enumerate(neighbor):
             score_w = []
             score_b = []
 
             neighborhood_w = [wb[n][0] for n in neighbor_list]
             neighborhood_b = [wb[n][1] for n in neighbor_list]
 
+            #Iterate through all neighbors of the current node
             for g_w, g_b in zip(neighborhood_w, neighborhood_b):
                 dist_w = [np.linalg.norm(other-g_w) for other in neighborhood_w]
                 dist_b = [np.linalg.norm(other-g_b) for other in neighborhood_b]
@@ -164,17 +166,19 @@ class DecLearning:
                 dist_w = np.sort(dist_w)
                 dist_b = np.sort(dist_b)
 
+                #Sum up closest n-b-2 vectors to g_w and g_b 
                 score_w.append(np.sum(dist_w[:(len(neighborhood_w) - b - 2)]))
                 score_b.append(np.sum(dist_b[:(len(neighborhood_b) - b - 2)]))
+            
+            print(f'Score W for node {i} is {score_w}', flush=True)
+            print(f'Score b for node {i} is {score_b}', flush = True)
             
             ind_w = score_w.index(min(score_w))
             ind_b = score_b.index(min(score_b))
 
-            smallest_score_neigh_w = neighbor_list[ind_w]
-            smallest_score_neigh_b = neighbor_list[ind_b]
-
-            new_w.append(wb[smallest_score_neigh_w][0])
-            new_b.append(wb[smallest_score_neigh_b][1])
+            new_w.append(neighborhood_w[ind_w])
+            new_b.append(neighborhood_b[ind_b])
+        
         return new_w, new_b
 
     def acc_test(self, model, t_data, t_label):
