@@ -205,7 +205,7 @@ class DecLearning:
             if screenMethod==None:
                 byz_range = (5,25)
             elif screenMethod=='Krum':
-                byz_range = (-0.5, -0.1)
+                byz_range = (-0.01, 0)
             else:
                 byz_range=(-1,0)
             #Byzantine failed nodes assigned first
