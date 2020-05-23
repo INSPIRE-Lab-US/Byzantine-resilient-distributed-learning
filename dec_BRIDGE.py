@@ -40,6 +40,10 @@ else:
 if args.screening:
     screen_method = args.screening
     dec_method = screen_method
+    if screen_method == 'Bulyan':
+        min_neighbor = 4*b+3
+    else:
+        min_neighbor = 2*b+3
 else:
     screen_method = None
     dec_method = 'DGD'
@@ -54,7 +58,7 @@ random.seed(a=30+monte_trial)
 para = DecLearning(dataset = 'MNIST', nodes=20, iterations=100, byzantine=b, local_samples=2000, 
                               con_rate=50, stepsize = 1e-1)
 #Generate the graph
-para.gen_graph(min_neigh = 4*para.b+3)    
+para.gen_graph(min_neigh = min_neighbor)    
 local_set, test_data, test_label = data_prep(para.dataset, para.M, para.N, one_hot=True)
 neighbors = para.get_neighbor()
 
@@ -66,7 +70,7 @@ tf.reset_default_graph()
 #To ensure reproducibility 
 tf.set_random_seed(30+monte_trial)
 
-w_nodes = [linear_classifier(stepsize = para.stepsize, sigma2=0.01) for node in range(para.M)]    
+w_nodes = [linear_classifier(stepsize = para.stepsize) for node in range(para.M)]    
 sess = para.initialization()
 
 #BRIDGE Algorithm
