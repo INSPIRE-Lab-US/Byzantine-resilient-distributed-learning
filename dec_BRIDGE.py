@@ -48,7 +48,7 @@ else:
     screen_method = None
     dec_method = 'DGD'
 
-print(f'Starting Monte Carlo trial {monte_trial}', flush=True)
+print(f'Starting Monte Carlo trial {monte_trial}')
 start = time.time()
 
 #Setting random seed for reproducibility
@@ -82,7 +82,7 @@ for iteration in range(para.T):
         
     #test over all test data
     accuracy = [para.acc_test(node, test_data, test_label) for node in w_nodes]
-    print(f'Accuracy for iteration {iteration} is {accuracy}', flush=True)
+    print(f'Accuracy for iteration {iteration} is {accuracy}')
     save.append(np.mean(accuracy))
     
     #node update using GD   
@@ -99,7 +99,7 @@ if b!=0 and goByzantine:
 else:
     filename = f'./result/{dec_method}/result_{dec_method}_b{b}_faultless_{monte_trial}.pickle'
 
-print(f'Monte Carlo {monte_trial} Done!\n Time elapsed {end-start} seconds\n', flush=True)
+print(f'Monte Carlo {monte_trial} Done!\n Time elapsed {end-start} seconds\n')
 
 with open(filename, 'wb') as handle:
     pickle.dump(save, handle)

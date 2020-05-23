@@ -170,8 +170,8 @@ class DecLearning:
                 score_w.append(np.sum(dist_w[:(len(neighborhood_w) - b - 2)]))
                 score_b.append(np.sum(dist_b[:(len(neighborhood_b) - b - 2)]))
             
-            print(f'Score W for node {i} is {score_w}', flush=True)
-            print(f'Score b for node {i} is {score_b}', flush = True)
+            print(f'Score W for node {i} is {score_w}')
+            print(f'Score b for node {i} is {score_b}')
             
             ind_w = score_w.index(min(score_w))
             ind_b = score_b.index(min(score_b))
