@@ -8,6 +8,7 @@ import struct
 import numpy as np
 import gzip
 import shutil
+import pickle
 
 
 
@@ -91,7 +92,35 @@ def mnist_read(path = "./data/MNIST/raw"):
         for row in sample[1]:
             image.extend(row)
         test_data.append(image)
+
+
+    #Pickle the extracted data as numpy arrays
+    with open('./data/MNIST/pickled/train_data.pickle', 'wb') as handle:
+        pickle.dump(train_data, handle)
+    
+    with open('./data/MNIST/pickled/train_labels.pickle','wb') as handle:
+        pickle.dump(train_label, handle)
+    
+    with open('./data/MNIST/pickled/test_data.pickle', 'wb') as handle:
+        pickle.dump(test_data, handle)
+
+    with open('./data/MNIST/pickled/test_labels.pickle', 'wb') as handle:
+        pickle.dump(test_label, handle)
+
         
         
     return train_data, train_label, test_data, test_label
 
+def mnist_read_pickled(path = './data/MNIST/pickled'):
+    with open(os.path.join(path, 'train_data.pickle'), 'rb') as handle:
+        train_data = pickle.load(handle)
+    with open(os.path.join(path, 'train_labels.pickle'), 'rb') as handle:
+        train_labels = pickle.load(handle)
+    
+    with open(os.path.join(path, 'test_data.pickle'), 'rb') as handle:
+        test_data = pickle.load(handle)
+    with open(os.path.join(path, 'test_labels.pickle'), 'rb') as handle:
+        test_labels = pickle.load(handle)
+    return train_data, train_labels, test_data, test_labels
+
+train_imgs, train_labels, test_imgs, test_labels = mnist_read() 
