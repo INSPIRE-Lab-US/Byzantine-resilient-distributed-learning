@@ -1,6 +1,6 @@
 # read and preprocess data
 import random
-from MNIST_read import mnist_read
+from MNIST_read import mnist_read_pickled
 import pickle
 
 class dis_data:
@@ -73,7 +73,7 @@ def data_prep(dataset, nodes, size=0, one_hot=False):
     Distribute training data across nodes and return test data w/ labels
     '''
     if dataset == 'MNIST':
-        train_data, train_label, test_data, test_label = mnist_read()
+        train_data, train_label, test_data, test_label = mnist_read_pickled()
         if one_hot:
             test_label = _one_hot(test_label)
     elif dataset == 'CIFAR':
