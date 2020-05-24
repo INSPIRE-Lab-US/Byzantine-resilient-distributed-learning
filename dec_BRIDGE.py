@@ -72,7 +72,7 @@ tf.reset_default_graph()
 tf.set_random_seed(30+monte_trial)
 
 #Initial step size
-step_size=1e-3
+step_size=1e-1
 
 w_nodes = [linear_classifier(stepsize = step_size) for node in range(para.M)]    
 sess = para.initialization()
