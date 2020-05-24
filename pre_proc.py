@@ -55,8 +55,8 @@ class dis_data:
             else:                
                 dist_data.append(self.all_data[n * frac : (n + 1) * frac])
                 dist_label.append(self.all_label[n * frac : (n + 1) * frac])
-	dist_data = np.asarray(dist_data)
-	dist_label = np.asarray(dist_label)
+	    dist_data = np.asarray(dist_data)
+	    dist_label = np.asarray(dist_label)
         return dist_data, dist_label
     def next_batch(self, node, size):
         '''
