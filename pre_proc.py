@@ -36,8 +36,8 @@ class dis_data:
         for ind in self.index:
             new_data.append(self.all_data[ind])
             new_label.append(self.all_label[ind])
-        self.all_data = np.asarray(new_data)
-        self.all_label = np.asarray(new_label)
+        new_data = np.asarray(new_data)
+        new_label = np.asarray(new_label)
         return new_data, new_label
     
     def distribute(self, nodes):
