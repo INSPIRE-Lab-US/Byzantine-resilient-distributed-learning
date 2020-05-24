@@ -93,10 +93,9 @@ for iteration in range(T):
     print(f'Accuracy for iteration {iteration} is {accuracy}')
     save.append(np.mean(accuracy))
     
-    step_size = step_size/(iteration+1)
 
     #node update using GD   
-    para.node_update(w_nodes, local_set, sess, stepsize=step_size)
+    para.node_update(w_nodes, local_set, sess, stepsize=step_size/(iteration+1))
 
 #Save final learned parameters
 wb = [node.weights() for node in w_nodes]
