@@ -7,7 +7,7 @@ from linear_classifier import linear_classifier
 
 class DecLearning:
     def __init__(self,dataset = 'MNIST', nodes = 20, iterations = 100, byzantine = 0, 
-                    local_samples = 2000, con_rate = 50, stepsize = 1e-1):
+                    local_samples = 2000, con_rate = 50):
         self.dataset = dataset
         self.M = nodes
         self.T = iterations
@@ -16,7 +16,6 @@ class DecLearning:
         self.con_rate = con_rate
         self.graph  = []
         self.edge_weight = []
-        self.stepsize = stepsize
     
     def gen_graph(self, min_neigh = 0):
         '''

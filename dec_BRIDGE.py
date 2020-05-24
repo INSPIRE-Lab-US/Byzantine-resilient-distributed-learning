@@ -74,6 +74,8 @@ tf.set_random_seed(30+monte_trial)
 w_nodes = [linear_classifier(stepsize = para.stepsize) for node in range(para.M)]    
 sess = para.initialization()
 
+step_size=1e-3
+
 #BRIDGE Algorithm
 for iteration in range(para.T):
     #Communication 
@@ -86,8 +88,10 @@ for iteration in range(para.T):
     print(f'Accuracy for iteration {iteration} is {accuracy}')
     save.append(np.mean(accuracy))
     
+    step_size = step_size/(iteration+1)
+
     #node update using GD   
-    para.node_update(w_nodes, local_set, sess, stepsize=para.stepsize/(iteration+1))
+    para.node_update(w_nodes, local_set, sess, stepsize=step_size)
 
 #Save final learned parameters
 wb = [node.weights() for node in w_nodes]
