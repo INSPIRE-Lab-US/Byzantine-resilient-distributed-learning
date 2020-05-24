@@ -56,8 +56,8 @@ start = time.time()
 np.random.seed(30+monte_trial)
 random.seed(a=30+monte_trial)
 
-para = DecLearning(dataset = 'MNIST', nodes=20, iterations=100, byzantine=b, local_samples=2000, 
-                              con_rate=50, stepsize = 1e-1)
+para = DecLearning(dataset = 'MNIST', nodes=20, byzantine=b, local_samples=2000)
+
 #Generate the graph
 para.gen_graph(min_neigh = min_neighbor)    
 local_set, test_data, test_label = data_prep(para.dataset, para.M, para.N, one_hot=True)
@@ -71,13 +71,18 @@ tf.reset_default_graph()
 #To ensure reproducibility 
 tf.set_random_seed(30+monte_trial)
 
-w_nodes = [linear_classifier(stepsize = para.stepsize) for node in range(para.M)]    
-sess = para.initialization()
-
+#Initial step size
 step_size=1e-3
 
+w_nodes = [linear_classifier(stepsize = step_size) for node in range(para.M)]    
+sess = para.initialization()
+
+
+#Iterations
+T = 100
+
 #BRIDGE Algorithm
-for iteration in range(para.T):
+for iteration in range(T):
     #Communication 
     para.communication(w_nodes, neighbors, sess, b = para.b, 
                         goByzantine = goByzantine ,screenMethod=screen_method)
