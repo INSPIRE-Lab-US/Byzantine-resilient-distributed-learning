@@ -1,7 +1,7 @@
 # read and preprocess data
 import random
-from MNIST_read import mnist_read_pickled
 import pickle
+import os
 
 class dis_data:
     '''
@@ -99,3 +99,27 @@ def _one_hot(label):
         new_l[int(i)] = 1
         l_oh.append(new_l)
     return l_oh
+
+def mnist_read_pickled(path = './data/MNIST/pickled'):
+    '''
+    Read pickled MNIST train/test data
+
+    Args:
+        path: Path to pickled numpy arrays (default: ./data/MNIST/pickled)
+    Return:
+        train_data
+        train_labels
+        test_data
+        test_labels
+    '''
+    with open(os.path.join(path, 'train_data.pickle'), 'rb') as handle:
+        train_data = pickle.load(handle)
+    with open(os.path.join(path, 'train_labels.pickle'), 'rb') as handle:
+        train_labels = pickle.load(handle)
+    
+    with open(os.path.join(path, 'test_data.pickle'), 'rb') as handle:
+        test_data = pickle.load(handle)
+    with open(os.path.join(path, 'test_labels.pickle'), 'rb') as handle:
+        test_labels = pickle.load(handle)
+    
+    return train_data, train_labels, test_data, test_labels

@@ -10,117 +10,97 @@ import gzip
 import shutil
 import pickle
 
+'''
+Extracts data from the gzipped MNIST dataset and pickles numpy arrays
+containing training and testing data
+'''
+path = "./raw"
+
+# Training data
+with gzip.open(os.path.join(path,'train-images-idx3-ubyte.gz'), 'rb') as f_in:
+    with open(os.path.join(path,'train-images-idx3-ubyte'), 'wb') as f_out:
+        shutil.copyfileobj(f_in, f_out)    
+with gzip.open(os.path.join(path,'train-labels-idx1-ubyte.gz'), 'rb') as f_in:
+    with open(os.path.join(path,'train-labels-idx1-ubyte'), 'wb') as f_out:
+        shutil.copyfileobj(f_in, f_out) 
+
+# Testing data
+with gzip.open(os.path.join(path,'t10k-images-idx3-ubyte.gz'), 'rb') as f_in:
+    with open(os.path.join(path,'t10k-images-idx3-ubyte'), 'wb') as f_out:
+        shutil.copyfileobj(f_in, f_out) 
+with gzip.open(os.path.join(path,'t10k-labels-idx1-ubyte.gz'), 'rb') as f_in:
+    with open(os.path.join(path,'t10k-labels-idx1-ubyte'), 'wb') as f_out:
+        shutil.copyfileobj(f_in, f_out) 
+
+'''
+Training Data
+'''
+#Path images
+fname_img = os.path.join(path, 'train-images-idx3-ubyte')
+#Path image labels
+fname_lbl = os.path.join(path, 'train-labels-idx1-ubyte')
+
+with open(fname_lbl, 'rb') as flbl:
+    magic, num = struct.unpack(">II", flbl.read(8))
+    lbl = np.fromfile(flbl, dtype=np.int8)
+
+with open(fname_img, 'rb') as fimg:
+    magic, num, rows, cols = struct.unpack(">IIII", fimg.read(16))
+    img = np.fromfile(fimg, dtype=np.uint8).reshape(len(lbl), rows, cols)
+
+#Lamba function accepts index and returns a tuple: (label, image)
+get_img = lambda idx: (lbl[idx], img[idx])
+
+trainingdata = []
+for i in range(len(lbl)):
+    trainingdata.append(get_img(i))
+train_data = []
+train_label = []
+for sample in trainingdata:
+    train_label.append(sample[0])
+    image = []
+    for row in sample[1]:
+        image.extend(row)
+    train_data.append(image)
+
+'''
+Testing Data
+'''
+#Path images
+fname_img = os.path.join(path, 't10k-images-idx3-ubyte')
+#Path image labels
+fname_lbl = os.path.join(path, 't10k-labels-idx1-ubyte')    
+
+with open(fname_lbl, 'rb') as flbl:
+    magic, num = struct.unpack(">II", flbl.read(8))
+    lbl = np.fromfile(flbl, dtype=np.int8)
+
+with open(fname_img, 'rb') as fimg:
+    magic, num, rows, cols = struct.unpack(">IIII", fimg.read(16))
+    img = np.fromfile(fimg, dtype=np.uint8).reshape(len(lbl), rows, cols)
+
+testdata = []
+for i in range(len(lbl)):
+    testdata.append(get_img(i))
+test_data = []
+test_label = []
+for sample in testdata:
+    test_label.append(sample[0])
+    image = []
+    for row in sample[1]:
+        image.extend(row)
+    test_data.append(image)
 
 
-def mnist_read(path = "./data/MNIST/raw"):
-    '''
-    Extracts data from the gzipped MNIST dataset and returns
-    training and testing data along with their respective labels
-    '''
+#Pickle the extracted data as numpy arrays
+with open('./data/MNIST/pickled/train_data.pickle', 'wb') as handle:
+    pickle.dump(np.asarray(train_data), handle)
 
-    # Training data
-    with gzip.open(os.path.join(path,'train-images-idx3-ubyte.gz'), 'rb') as f_in:
-        with open(os.path.join(path,'train-images-idx3-ubyte'), 'wb') as f_out:
-            shutil.copyfileobj(f_in, f_out)    
-    with gzip.open(os.path.join(path,'train-labels-idx1-ubyte.gz'), 'rb') as f_in:
-        with open(os.path.join(path,'train-labels-idx1-ubyte'), 'wb') as f_out:
-            shutil.copyfileobj(f_in, f_out) 
-    
-    # Testing data
-    with gzip.open(os.path.join(path,'t10k-images-idx3-ubyte.gz'), 'rb') as f_in:
-        with open(os.path.join(path,'t10k-images-idx3-ubyte'), 'wb') as f_out:
-            shutil.copyfileobj(f_in, f_out) 
-    with gzip.open(os.path.join(path,'t10k-labels-idx1-ubyte.gz'), 'rb') as f_in:
-        with open(os.path.join(path,'t10k-labels-idx1-ubyte'), 'wb') as f_out:
-            shutil.copyfileobj(f_in, f_out) 
+with open('./data/MNIST/pickled/train_labels.pickle','wb') as handle:
+    pickle.dump(np.asarray(train_label), handle)
 
-    '''
-    Training Data
-    '''
-    #Path images
-    fname_img = os.path.join(path, 'train-images-idx3-ubyte')
-    #Path image labels
-    fname_lbl = os.path.join(path, 'train-labels-idx1-ubyte')
+with open('./data/MNIST/pickled/test_data.pickle', 'wb') as handle:
+    pickle.dump(np.asarray(test_data), handle)
 
-    with open(fname_lbl, 'rb') as flbl:
-        magic, num = struct.unpack(">II", flbl.read(8))
-        lbl = np.fromfile(flbl, dtype=np.int8)
-
-    with open(fname_img, 'rb') as fimg:
-        magic, num, rows, cols = struct.unpack(">IIII", fimg.read(16))
-        img = np.fromfile(fimg, dtype=np.uint8).reshape(len(lbl), rows, cols)
-
-    #Lamba function accepts index and returns a tuple: (label, image)
-    get_img = lambda idx: (lbl[idx], img[idx])
-
-    trainingdata = []
-    for i in range(len(lbl)):
-        trainingdata.append(get_img(i))
-    train_data = []
-    train_label = []
-    for sample in trainingdata:
-        train_label.append(sample[0])
-        image = []
-        for row in sample[1]:
-            image.extend(row)
-        train_data.append(image)
-    
-    '''
-    Testing Data
-    '''
-    #Path images
-    fname_img = os.path.join(path, 't10k-images-idx3-ubyte')
-    #Path image labels
-    fname_lbl = os.path.join(path, 't10k-labels-idx1-ubyte')    
-
-    with open(fname_lbl, 'rb') as flbl:
-        magic, num = struct.unpack(">II", flbl.read(8))
-        lbl = np.fromfile(flbl, dtype=np.int8)
-
-    with open(fname_img, 'rb') as fimg:
-        magic, num, rows, cols = struct.unpack(">IIII", fimg.read(16))
-        img = np.fromfile(fimg, dtype=np.uint8).reshape(len(lbl), rows, cols)
-    
-    testdata = []
-    for i in range(len(lbl)):
-        testdata.append(get_img(i))
-    test_data = []
-    test_label = []
-    for sample in testdata:
-        test_label.append(sample[0])
-        image = []
-        for row in sample[1]:
-            image.extend(row)
-        test_data.append(image)
-
-
-    #Pickle the extracted data as numpy arrays
-    with open('./data/MNIST/pickled/train_data.pickle', 'wb') as handle:
-        pickle.dump(train_data, handle)
-    
-    with open('./data/MNIST/pickled/train_labels.pickle','wb') as handle:
-        pickle.dump(train_label, handle)
-    
-    with open('./data/MNIST/pickled/test_data.pickle', 'wb') as handle:
-        pickle.dump(test_data, handle)
-
-    with open('./data/MNIST/pickled/test_labels.pickle', 'wb') as handle:
-        pickle.dump(test_label, handle)
-
-        
-        
-    return train_data, train_label, test_data, test_label
-
-def mnist_read_pickled(path = './data/MNIST/pickled'):
-    with open(os.path.join(path, 'train_data.pickle'), 'rb') as handle:
-        train_data = pickle.load(handle)
-    with open(os.path.join(path, 'train_labels.pickle'), 'rb') as handle:
-        train_labels = pickle.load(handle)
-    
-    with open(os.path.join(path, 'test_data.pickle'), 'rb') as handle:
-        test_data = pickle.load(handle)
-    with open(os.path.join(path, 'test_labels.pickle'), 'rb') as handle:
-        test_labels = pickle.load(handle)
-    return train_data, train_labels, test_data, test_labels
-
-train_imgs, train_labels, test_imgs, test_labels = mnist_read() 
+with open('./data/MNIST/pickled/test_labels.pickle', 'wb') as handle:
+    pickle.dump(np.asarray(test_label), handle)
