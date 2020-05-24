@@ -6,24 +6,22 @@ from linear_classifier import linear_classifier
 
 
 class DecLearning:
-    def __init__(self,dataset = 'MNIST', nodes = 20, iterations = 100, byzantine = 0, 
-                    local_samples = 2000, con_rate = 50):
+    def __init__(self,dataset = 'MNIST', nodes = 20, byzantine = 0, 
+                    local_samples = 2000):
         self.dataset = dataset
         self.M = nodes
-        self.T = iterations
         self.b = byzantine
         self.N = local_samples
-        self.con_rate = con_rate
         self.graph  = []
         self.edge_weight = []
     
-    def gen_graph(self, min_neigh = 0):
+    def gen_graph(self, min_neigh = 0, con_rate=50):
         '''
         Generates the adjacency matrix for a graph
 
         Args:
             nodes: Number of vertices in the graph
-            con_rate: Connection rate of graph
+            con_rate: Connection rate of graph (default: 50)
             b: Number of Byzantine nodes 
         
         Returns:
@@ -40,7 +38,7 @@ class DecLearning:
                 graph[row].append(1)
                 for col in range(row + 1, nodes):
                     d = random.randint(1, 100)
-                    if d < self.con_rate:
+                    if d < con_rate:
                         graph[row].append(1)     #form symmetric matrix row by row
                         graph[col].append(1)
                     else:
