@@ -199,12 +199,12 @@ class DecLearning:
         ave_b = []
 
         if goByzantine:
-            if screenMethod==None:
-                byz_range = (5,25)
-            elif screenMethod=='Krum':
-                byz_range = (-0.01, 0)
-            else:
-                byz_range=(-1,0)
+            # if screenMethod==None:
+            #     byz_range = (5,25)
+            # elif screenMethod=='Krum':
+            #     byz_range = (-0.01, 0)
+            # else:
+            byz_range=(-1,0)
             #Byzantine failed nodes assigned first
             for byzant in range(b):
                 wb[byzant][0] = self.Byzantine(wb[byzant][0], interval=byz_range)
