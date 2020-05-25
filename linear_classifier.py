@@ -44,8 +44,8 @@ class linear_classifier:
         self.loss = self.cross_entropy + self.regularizer
         
         self.stepsize = tf.placeholder(tf.float32, shape=[])        
-        self.optimizer = tf.train.GradientDescentOptimizer(self.stepsize)
-        #self.optimizer = tf.train.AdamOptimizer(stepsize)      
+        #self.optimizer = tf.train.GradientDescentOptimizer(self.stepsize)
+        self.optimizer = tf.train.AdamOptimizer(self.stepsize)      
         self.train_step = self.optimizer.minimize(self.loss)
         self.correct_prediction = tf.equal(tf.argmax(self.y_inf,1), tf.argmax(self.y_,1))
         self.accuracy = tf.reduce_mean(tf.cast(self.correct_prediction, tf.float32))        
