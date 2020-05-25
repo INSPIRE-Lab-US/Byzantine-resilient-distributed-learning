@@ -1,5 +1,9 @@
-# Decentralized learning with ByRDiE
+'''
+Decentralized Learning with ByRDiE
 
+Run this script by specifying the number of Byzantine nodes and whether they should actually be faulty
+Run this 10 times setting monte_trial to 0-9 to reproduce the results
+'''
 # Specify M nodes, N local samples, dataset, failure type, screening type, stepsize, connection rate, T iterations,
 # b Byzantine agents
 
