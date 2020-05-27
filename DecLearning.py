@@ -1,7 +1,6 @@
 import random
 import numpy as np
 import tensorflow as tf
-from screening_method import Byzantine_algs
 from linear_classifier import linear_classifier
 
 
