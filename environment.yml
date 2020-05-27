@@ -1,0 +1,9 @@
+name: byzantine
+channels:
+  - defaults
+dependencies:
+  - python=3.7.7
+  - tensorflow==1.15
+  - numpy
+  - jupyterlab
+  - matplotlib
