@@ -3,6 +3,7 @@ __pycache__/
 infimnist/
 slurmScripts/
 original_results/
+result/.ipynb_checkpoints/
 *.ipynb
 *.pdf
 *.png
