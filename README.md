@@ -5,6 +5,8 @@ Statistical Inference and Machine Learning](https://arxiv.org/abs/1908.08649)
 
 Z. Yang, A. Gang and W. U. Bajwa, "Adversary-Resilient Distributed and Decentralized Statistical Inference and Machine Learning: An Overview of Recent Advances Under the Byzantine Threat Model," in IEEE Signal Processing Magazine, vol. 37, no. 3, pp. 146-159, May 2020, doi: 10.1109/MSP.2020.2973345.
 
+
+For all these experiments we setup a decentralized architecture with 20 nodes and 2,000 training samples from the MNIST dataset per node. 
 ## Requirements and Dependencies
 To reproduce the environment we used to run the experiments create a conda environment using the `environment.yml` provided.
 
@@ -21,7 +23,7 @@ Lenovo NextScale nx360 servers
 - 128 GB RAM
 - 1 TB local scratch disk
 
-However we only allocated 4GB and 1 CPU when submitting our jobs. 
+However we only allocated 4GB of RAM and 1 CPU when submitting our jobs. 
 
 For the BRIDGE experiments it took about 100 seconds to finish running.
 
