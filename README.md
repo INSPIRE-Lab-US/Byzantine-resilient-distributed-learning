@@ -50,11 +50,13 @@ optional arguments:
                         default no screening is done regular gradient descent
 ```
 
-To run BRIDGE defending against 2 Byzantine nodes with no faulty nodes.
-`python dec_BRIDGE.py 0 -b=2 -s=BRIDGE'
+Example: run BRIDGE defending against 2 Byzantine nodes with no faulty nodes.
+
+`python dec_BRIDGE.py 0 -b=2 -s=BRIDGE`
 
 With `b` faulty nodes
-`python dec_BRIDGE.py 0 -b=2 -gb=True -s=BRIDGE'
+
+`python dec_BRIDGE.py 0 -b=2 -gb=True -s=BRIDGE`
 
 Run 10 of those in parallel with `monte_trial` varying between 0-9 to run 10 independent trials of the experiment. 
 
