@@ -8,7 +8,7 @@ Run this 10 times setting monte_trial to 0-9 to reproduce the results
 # b Byzantine agents
 
 import numpy as np
-from pre_proc import data_prep
+from dist_data import data_prep
 from linear_classifier import linear_classifier
 import tensorflow as tf
 import time
