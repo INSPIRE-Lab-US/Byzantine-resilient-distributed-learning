@@ -6,6 +6,9 @@ from linear_classifier import linear_classifier
 
 
 class DecLearning:
+    '''
+    Encapsulates a simulated decentralized learning framework
+    '''
     def __init__(self,dataset = 'MNIST', nodes = 20, byzantine = 0, 
                     local_samples = 2000):
         self.dataset = dataset
@@ -110,13 +113,19 @@ class DecLearning:
         sess.run(tf.global_variables_initializer())
         return sess
     
-
-    def screen(self, grad, b, method):
-        screened = Byzantine_algs[method](grad, b)
-        return screened
     
-    #The new grad W and grad b vectors for each node are set to the median of all their neighbors
-    def Median(self, W, neighbor, wb, b):
+    def Median(self, neighbor, wb, b):
+        '''
+        Perform BRIDGE-Median screening
+
+        Args:
+            neighbor: 2D list of neighbors for each node
+            wb: List of W matrix and bias vector for each node to be learned
+            b: Number of byzantine nodes to defend against
+        Return:
+            ave_w: List of W matrix for each node based on BRIDGE-Median screening
+            ave_b: List of b vector for each node based on BRIDGE-Median screening
+        '''
         ave_w = []
         ave_b = []
         for neighbor_list in neighbor:
@@ -136,7 +145,7 @@ class DecLearning:
         Perform Krum screening
 
         Args:
-            neighbor: 2D list of neighbors for each node
+            neighbor: Matrix of neighbors for each node
             wb: List with W matrix and b vector for each node
             b: Number of byzantine nodes
 
@@ -191,19 +200,17 @@ class DecLearning:
 
         Args:
             W: Nodes in our network
-            neighbor: A matrix where the ith row contains an array of the neighbors for the ith node
-
+            neighbor: Matrix of neighbors for each node
+            sess: TensforFlow session
+            b: Number of Byzantine nodes to defend against
+            goByzantine: Boolean to tell us whether b nodes actually undergo failure (default: False)
+            screenMethod: Screening method to be used
         '''
         wb = [node.weights() for node in W]
         ave_w = []
         ave_b = []
 
         if goByzantine:
-            # if screenMethod==None:
-            #     byz_range = (5,25)
-            # elif screenMethod=='Krum':
-            #     byz_range = (-0.01, 0)
-            # else:
             byz_range=(-1,0)
             #Byzantine failed nodes assigned first
             for byzant in range(b):
@@ -241,11 +248,11 @@ class DecLearning:
 
         Args:
             W: Nodes in our network
-            neighbor: A matrix where the ith row contains an array of the neighbors for the ith node
+            neighbor: Matrix of neighbors for each node
             p: Dimension of W model
             sess: TensorFlow session
             b: Number of Byzantine nodes
-            screen: Boolean to screen for Byzantines
+            screen: Boolean to screen for Byzantines using ByRDiE
 
         '''
 
@@ -294,7 +301,11 @@ class DecLearning:
 
         Args:
             W: Nodes in our network
-            neighbor: A matrix where the ith row contains an array of the neighbors for the ith node
+            neighbor: Matrix of neighbors for each node
+            p: Dimension of bias vector
+            sess: TensorFlow session
+            b: Number of Byzantine nodes
+            screen: Boolean to screen for Byzantines using ByRDiE
 
         '''
         _w = [node.weights()[0] for node in W]
@@ -313,7 +324,6 @@ class DecLearning:
                 neighborhood = np.sort(neighborhood, axis = 0)
                 neighborhood = neighborhood[b : -b]
             neighborhood = np.mean(neighborhood, axis = 0)
-        #        print(neighborhood.shape)
             ave.append(neighborhood)
         for scalar, node in zip(ave, _b):
             node[p] = scalar
@@ -321,18 +331,27 @@ class DecLearning:
         for node, ww, bb in zip(W, _w, _b):
             node.assign([ww, bb], sess) 
 
-    def node_update(self, W, data, sess, stepsize=1e-3):        
+    def node_update(self, W, data, sess, stepsize=1e-3):
+        '''
+        Update model parameters for each node
+        '''        
         for model, sample, label in zip(W, data.dist_data, data.dist_label):
             sess.run(model.train_step, feed_dict={model.x: sample, model.y_: label, model.stepsize: stepsize})
     
-    def node_update_w(self, W, data, p, sess, stepsize=1e-4):        
+    def node_update_w(self, W, data, p, sess, stepsize=1e-4):
+        '''
+        Update W matrix for each node
+        '''        
         for model, sample, label in zip(W, data.dist_data, data.dist_label):
             g = sess.run(model.gradient_w, feed_dict={model.x: sample, model.y_: label, model.stepsize: stepsize})
             new_g = np.zeros([7840, 1])
             new_g[p] = g.reshape([7840, 1])[p]
             sess.run(model.local_update_w, feed_dict={model.gradient_port_w: new_g.reshape([784,10]), model.stepsize: stepsize})
         
-    def node_update_b(self, W, data, p, sess, stepsize=1e-4):        
+    def node_update_b(self, W, data, p, sess, stepsize=1e-4):
+        '''
+        Update bias vector for each node
+        '''        
         for model, sample, label in zip(W, data.dist_data, data.dist_label):
             g = sess.run(model.gradient_b, feed_dict={model.x: sample, model.y_: label, model.stepsize: stepsize})
             new_g = np.zeros([10])

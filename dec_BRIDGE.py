@@ -14,7 +14,6 @@ import pickle
 import random
 import argparse
 from DecLearning import DecLearning
-from screening_method import Byzantine_algs
       
 parser = argparse.ArgumentParser()
 parser.add_argument("monte_trial", help="Specify which monte carlo trial to run", type=int)
@@ -83,7 +82,7 @@ T = 100
 
 #BRIDGE Algorithm
 for iteration in range(T):
-    #Communication 
+    #Communication and screening
     para.communication(w_nodes, neighbors, sess, b = para.b, 
                         goByzantine = goByzantine ,screenMethod=screen_method)
     
