@@ -186,6 +186,88 @@ class DecLearning:
         
         return new_w, new_b
 
+    def Bulyan(self, wb, b):
+      
+        new_w = []
+        new_b = []
+        
+
+        #Bulyan screening for W matrix
+        neighbor = self.get_neighbor()
+        for i,neighbor_list in enumerate(neighbor):
+            S_w = []
+            #Part 1 of Bulyan using Krum screening to screen for W matrix
+            M = len(neighbor_list)
+            for _ in range(M - 2 * b):
+                score_w = []
+
+                neighborhood_w = [wb[n][0] for n in neighbor_list]
+
+                for g_w in neighborhood_w:
+                    dist_w = [np.abs(other - g_w) for other in neighborhood_w]
+
+                    dist_w = np.sort(dist_w)
+
+                    score_w.append(np.sum(dist_w[:(len(neighborhood_w) - b - 2)]))
+                ind_w = score_w.index(min(score_w))
+
+                S_w.append(neighborhood_w.pop(ind_w))
+
+
+            #Part 2 of Bulyan screening for W matrix
+            ave = []
+
+            #Dimension of the gradient we are screening for
+            grad_dim = len(S_w[0])
+
+            for dim in range(grad_dim):
+                m_i = [w[dim] for w in S_w]
+                m_i = np.sort(m_i, axis = 0)
+                m_i = m_i[b : -b]
+                m_i = np.mean(m_i, axis = 0)
+                ave.append(m_i)
+            new_w.append(ave)
+
+        #Bulyan screening for b vector
+        neighbor = self.get_neighbor()
+        for i,neighbor_list in enumerate(neighbor):
+            S_b = []
+            #Part 1 of Bulyan using Krum screening to screen for b vector
+            M = len(neighbor_list)
+            for _ in range(M - 2 * b):
+                score_b = []
+
+                neighborhood_b = [wb[n][1] for n in neighbor_list]
+
+                for g_b in neighborhood_b:
+                    dist_b = [np.abs(other - g_b) for other in neighborhood_b]
+
+                    dist_b = np.sort(dist_b)
+
+                    score_b.append(np.sum(dist_b[:(len(neighborhood_b) - b - 2)]))
+                ind_b = score_b.index(min(score_b))
+
+                S_b.append(neighborhood_b.pop(ind_b))
+
+                del neighbor_list[ind_b]
+
+            #Part 2 of Bulyan screening for W matrix
+            ave = []
+
+            #Dimension of the gradient we are screening for
+            grad_dim = len(S_b[0])
+
+            for i in range(grad_dim):
+                m_i = [b[i] for b in S_b]
+                m_i = np.sort(m_i, axis = 0)
+                m_i = m_i[b : -b]
+                m_i = np.mean(m_i, axis = 0)
+                ave.append(m_i)
+            new_b.append(ave)          
+        
+        
+        return new_w, new_b
+
     def acc_test(self, model, t_data, t_label):
         acc = model.accuracy.eval(feed_dict={
                 model.x:t_data, model.y_: t_label,})
@@ -220,6 +302,8 @@ class DecLearning:
             ave_w, ave_b = self.Median(W, neighbor, wb, b)
         if screenMethod == 'Krum':
             ave_w, ave_b = self.Krum(neighbor, wb, b)
+        if screenMethod == 'Bulyan':
+            ave_w, ave_b = self.Bulyan(wb, b)
         else:
             for neighbor_list in neighbor:
                 neighborhood_w = [wb[n][0] for n in neighbor_list]

@@ -13,6 +13,7 @@ import time
 import pickle
 import random
 import argparse
+import os
 from DecLearning import DecLearning
       
 parser = argparse.ArgumentParser()
@@ -102,10 +103,15 @@ wb = [node.weights() for node in w_nodes]
 sess.close()
 
 end = time.time()
+
+
+os.makedirs(f'./results/{dec_method}',exist_ok=True)
+
+
 if b!=0 and goByzantine:
-    filename = f'./result/{dec_method}/result_{dec_method}_b{b}_{monte_trial}.pickle'
+    filename = f'./results/{dec_method}/result_{dec_method}_b{b}_{monte_trial}.pickle'
 else:
-    filename = f'./result/{dec_method}/result_{dec_method}_b{b}_faultless_{monte_trial}.pickle'
+    filename = f'./results/{dec_method}/result_{dec_method}_b{b}_faultless_{monte_trial}.pickle'
 
 print(f'Monte Carlo {monte_trial} Done!\n Time elapsed {end-start} seconds\n')
 
