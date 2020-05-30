@@ -17,6 +17,9 @@ median_b2 = []
 krum_b2_faultless = []
 krum_b2 = []
 
+bulyan_b2_faultless = []
+bulyan_b2 = []
+
 krum_b4_faultless = []
 krum_b4 = []
 
@@ -26,30 +29,35 @@ krum_b3 = []
 
 
 for monte in range(10):
-    with open(f'./results/DGD/result_DGD_b0_faultless_{monte}.pickle', 'rb') as handle:
+    with open(f'./result/DGD/result_DGD_b0_faultless_{monte}.pickle', 'rb') as handle:
         dgd_b0.append(pickle.load(handle))
-    with open(f'./results/DGD/result_DGD_b2_{monte}.pickle', 'rb') as handle:
+    with open(f'./result/DGD/result_DGD_b2_{monte}.pickle', 'rb') as handle:
         dgd_b2.append(pickle.load(handle))
     
-    with open(f'./results/ByRDiE/result_ByRDiE_b2_faultless_{monte}.pickle', 'rb') as handle:
+    with open(f'./result/ByRDiE/result_ByRDiE_b2_faultless_{monte}.pickle', 'rb') as handle:
         byrdie_b2_faultless.append(pickle.load(handle))
-    with open(f'./results/ByRDiE/result_ByRDiE_b2_{monte}.pickle', 'rb') as handle:
+    with open(f'./result/ByRDiE/result_ByRDiE_b2_{monte}.pickle', 'rb') as handle:
         byrdie_b2.append(pickle.load(handle))
     
-    with open(f'./results/BRIDGE/result_BRIDGE_b2_faultless_{monte}.pickle','rb') as handle:
+    with open(f'./result/BRIDGE/result_BRIDGE_b2_faultless_{monte}.pickle','rb') as handle:
         bridge_b2_faultless.append(pickle.load(handle))
-    with open(f'./results/BRIDGE/result_BRIDGE_b2_{monte}.pickle','rb') as handle:
+    with open(f'./result/BRIDGE/result_BRIDGE_b2_{monte}.pickle','rb') as handle:
         bridge_b2.append(pickle.load(handle))
     
-    with open(f'./results/Median/result_Median_b2_faultless_{monte}.pickle','rb') as handle:
+    with open(f'./result/Median/result_Median_b2_faultless_{monte}.pickle','rb') as handle:
         median_b2_faultless.append(pickle.load(handle))
-    with open(f'./results/Median/result_Median_b2_{monte}.pickle','rb') as handle:
+    with open(f'./result/Median/result_Median_b2_{monte}.pickle','rb') as handle:
         median_b2.append(pickle.load(handle))
 
-    with open(f'./results/Krum/result_Krum_b2_faultless_{monte}.pickle','rb') as handle:
+    with open(f'./result/Krum/result_Krum_b2_faultless_{monte}.pickle','rb') as handle:
         krum_b2_faultless.append(pickle.load(handle))
-    with open(f'./results/Krum/result_Krum_b2_{monte}.pickle','rb') as handle:
+    with open(f'./result/Krum/result_Krum_b2_{monte}.pickle','rb') as handle:
         krum_b2.append(pickle.load(handle))
+    
+    with open(f'./result/Bulyan/result_Bulyan_b2_{monte}.pickle','rb') as handle:
+        bulyan_b2.append(pickle.load(handle))
+    with open(f'./result/Bulyan/result_Bulyan_b2_faultless_{monte}.pickle','rb') as handle:
+        bulyan_b2_faultless.append(pickle.load(handle))
 
 smooth_dgd_b0 = np.mean(dgd_b0, axis=0)
 smooth_dgd_b2 = np.mean(dgd_b2, axis=0)
@@ -68,6 +76,9 @@ smooth_median_b2 = np.mean(median_b2, axis=0)
 smooth_krum_b2_faultless = np.mean(krum_b2_faultless, axis=0)
 smooth_krum_b2 = np.mean(krum_b2, axis=0)
 
+smooth_bulyan_b2_faultless = np.mean(bulyan_b2, axis=0)
+smooth_bulyan_b2 = np.mean(bulyan_b2, axis=0)
+
 scalar_comms = [7840*n for n in range(100)]
 
 byrdie_axis = []
@@ -84,13 +95,14 @@ plt.plot(byrdie_axis[:3960], smooth_byrdie_b2_FL*100, markevery=200, marker='.')
 plt.plot(scalar_comms, smooth_bridge_b2_faultless*100, markevery=5, marker='p', color='g')
 plt.plot(scalar_comms, smooth_median_b2_faultless*100, markevery=5, marker='s', color='r')
 plt.plot(scalar_comms, smooth_krum_b2_faultless*100, markevery=5, marker='s', color='m')
+plt.plot(scalar_comms, smooth_bulyan_b2_faultless*100, markevery=5, marker='x')
 
 
 plt.ylim((5,90))
 plt.ylabel('Average classification accuracy (%)')
 plt.xlabel('Number of scalar Broadcasts per node')
 plt.title('Faultless setting')
-plt.legend(['DGD','ByRDiE','BRIDGE','Median','Krum'], loc='right')
+plt.legend(['DGD','ByRDiE','BRIDGE','Median','Krum','Bulyan'], loc='right')
 
 
 plt.subplot(1,2,2)
@@ -99,10 +111,12 @@ plt.plot(byrdie_axis[:3960], smooth_byrdie_b2*100, markevery=200, marker='.')
 plt.plot(scalar_comms, smooth_bridge_b2*100, markevery=5, marker='p', color='g')
 plt.plot(scalar_comms, smooth_median_b2*100, markevery=5, marker='s', color='r')
 plt.plot(scalar_comms, smooth_krum_b2*100, markevery=5, marker='s', color='m')
+plt.plot(scalar_comms, smooth_bulyan_b2*100, markevery=5, marker='x')
+
 
 plt.ylim((5,90))
 plt.ylabel('Average classification accuracy (%)')
 plt.xlabel('Number of scalar Broadcasts per node')
 plt.title('Faulty setting')
-plt.legend(['DGD','ByRDiE','BRIDGE','Median','Krum'], loc='right')
-plt.savefig('./results/plot_dec.png', bboxinches='tight')
+plt.legend(['DGD','ByRDiE','BRIDGE','Median','Krum','Bulyan'], loc='right')
+plt.savefig('./result/plot_dec.png', bboxinches='tight')

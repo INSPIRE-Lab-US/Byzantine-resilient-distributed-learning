@@ -105,13 +105,13 @@ sess.close()
 end = time.time()
 
 
-os.makedirs(f'./results/{dec_method}',exist_ok=True)
+os.makedirs(f'./result/{dec_method}',exist_ok=True)
 
 
 if b!=0 and goByzantine:
-    filename = f'./results/{dec_method}/result_{dec_method}_b{b}_{monte_trial}.pickle'
+    filename = f'./result/{dec_method}/result_{dec_method}_b{b}_{monte_trial}.pickle'
 else:
-    filename = f'./results/{dec_method}/result_{dec_method}_b{b}_faultless_{monte_trial}.pickle'
+    filename = f'./result/{dec_method}/result_{dec_method}_b{b}_faultless_{monte_trial}.pickle'
 
 print(f'Monte Carlo {monte_trial} Done!\n Time elapsed {end-start} seconds\n')
 
