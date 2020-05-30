@@ -2,14 +2,9 @@
 __pycache__/
 slurmScripts/
 original_results/
-result/.ipynb_checkpoints/
 
 
-result/DGD/*
-result/ByRDiE/*
-result/BRIDGE/*
-result/Krum/*
-result/Median/*
+result/
 
 *.ipynb
 *.pdf
