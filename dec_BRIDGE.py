@@ -43,7 +43,7 @@ if args.screening:
     screen_method = args.screening
     dec_method = screen_method
     if screen_method == 'Bulyan':
-        min_neighbor = 4*b+3
+        min_neighbor = 4*b+1
         
 else:
     screen_method = None
