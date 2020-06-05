@@ -45,57 +45,15 @@ start = time.time()
 np.random.seed(30+monte_trial)
 random.seed(a=30+monte_trial)
 
-#checkpoint
-class byrdie_checkpt:
-    def __init__(self, weights, save, iteration):
-        self.weights = weights
-        self.save = save
-        self.iteration = iteration
-        
-    def pickle(self, r):
-        with open('./checkpt/ByRDiE_checkpt_current_%d.pickle'%r, 'wb') as handle:
-            pickle.dump(self, handle)
-        
-class byrdie_initialization:
-    def __init__(self, exp_parameters, graph, neighbors, local_data, test_data, test_label):
-        self.parameters = exp_parameters
-        self.graph = graph
-        self.neighbors = neighbors
-        self.local_data = local_data
-        self.test_data = test_data
-        self.test_label = test_label
-    def save(self, r):
-        with open('./checkpt/ByRDiE_checkpt_ini_%d.pickle'%r, 'wb') as handle:
-            pickle.dump(self, handle)
 
 
-def chekpt_read(r):
-    '''
-    Attempts to read the saved initialization and checkpoint for the ByRDiE experiment and returns all parameters relevant to continuing the experiment
-    '''
-    with open('./checkpt/ByRDiE_checkpt_ini_%d.pickle'%r, 'rb') as handle: 
-        ini = pickle.load(handle)
-    with open('./checkpt/ByRDiE_checkpt_current_%d.pickle'%r, 'rb') as handle: 
-        current = pickle.load(handle)
-    
-    return ini.parameters, ini.graph, ini.neighbors, ini.local_data, ini.test_data, ini.test_label, current.weights, current.save, current.iteration
-
-
-r = 1
-try:
-    para, graph, neighbors, local_set, test_data, test_label, weights, save, t = chekpt_read(r)
-    loaded = True
-except:        
-    para = DecLearning(dataset = 'MNIST', nodes=20, byzantine = b, local_samples=2000)
-    loaded = False
-    #Generate the graph
-    para.gen_graph(min_neigh = min_neighbor)
-    local_set, test_data, test_label = data_prep(para.dataset, para.M, para.N, one_hot=True)
-    neighbors = para.get_neighbor()
-    # checkpt_ini = byrdie_initialization(para, graph, neighbors, local_set, test_data, test_label)
-    save = []
-    t = 0
-    # checkpt_ini.save(r)
+para = DecLearning(dataset = 'MNIST', nodes=20, byzantine = b, local_samples=2000)
+loaded = False
+#Generate the graph
+para.gen_graph(min_neigh = min_neighbor)
+local_set, test_data, test_label = data_prep(para.dataset, para.M, para.N, one_hot=True)
+neighbors = para.get_neighbor()
+save = []
 
 #Initialization
 tf.reset_default_graph()
@@ -110,12 +68,9 @@ sess = para.initialization()
 
 T = 100
 
-if loaded:
-    for w, node in zip(weights, w_nodes):
-        node.assign(w, sess)
 
 #ByRDiE Algorithm
-for iteration in range(t + 1, T):
+for iteration in range(T):
 
 
     #Iterates over the first 784 dimensions of the weights
@@ -142,10 +97,6 @@ for iteration in range(t + 1, T):
     save.append(accuracy)
 
 
-    
-    # weights = [node.weights() for node in w_nodes]
-    # checkpt_current = byrdie_checkpt(weights, save, iteration)
-    # checkpt_current.pickle(r)
 sess.close()
 
 if b!=0 and goByzantine:
