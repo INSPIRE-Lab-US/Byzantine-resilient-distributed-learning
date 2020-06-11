@@ -183,7 +183,7 @@ class DecLearning:
         return new_w, new_b
 
     def Bulyan(self, wb, b):
-       '''
+        '''
         Perform decentralized BRIDGE-Bulyan with Krum screening
 
         Args:
@@ -196,7 +196,7 @@ class DecLearning:
         '''      
         new_w = []
         new_b = []
-        
+
 
         #Bulyan screening for W matrix
         neighbor = self.get_neighbor()
@@ -220,19 +220,19 @@ class DecLearning:
                 S_w.append(neighborhood_w.pop(ind_w))
 
 
-            #Part 2 of Bulyan screening for W matrix
-            ave = []
+        #Part 2 of Bulyan screening for W matrix
+        ave = []
 
-            #Dimension of the gradient we are screening for
-            grad_dim = len(S_w[0])
+        #Dimension of the gradient we are screening for
+        grad_dim = len(S_w[0])
 
-            for dim in range(grad_dim):
-                m_i = [w[dim] for w in S_w]
-                m_i = np.sort(m_i, axis = 0)
-                m_i = m_i[b : -b]
-                m_i = np.mean(m_i, axis = 0)
-                ave.append(m_i)
-            new_w.append(ave)
+        for dim in range(grad_dim):
+            m_i = [w[dim] for w in S_w]
+            m_i = np.sort(m_i, axis = 0)
+            m_i = m_i[b : -b]
+            m_i = np.mean(m_i, axis = 0)
+            ave.append(m_i)
+        new_w.append(ave)
 
         #Bulyan screening for b vector
         neighbor = self.get_neighbor()
@@ -257,21 +257,21 @@ class DecLearning:
 
                 del neighbor_list[ind_b]
 
-            #Part 2 of Bulyan screening for W matrix
-            ave = []
+        #Part 2 of Bulyan screening for W matrix
+        ave = []
 
-            #Dimension of the gradient we are screening for
-            grad_dim = len(S_b[0])
+        #Dimension of the gradient we are screening for
+        grad_dim = len(S_b[0])
 
-            for i in range(grad_dim):
-                m_i = [b[i] for b in S_b]
-                m_i = np.sort(m_i, axis = 0)
-                m_i = m_i[b : -b]
-                m_i = np.mean(m_i, axis = 0)
-                ave.append(m_i)
-            new_b.append(ave)          
-        
-        
+        for i in range(grad_dim):
+            m_i = [b[i] for b in S_b]
+            m_i = np.sort(m_i, axis = 0)
+            m_i = m_i[b : -b]
+            m_i = np.mean(m_i, axis = 0)
+            ave.append(m_i)
+        new_b.append(ave)          
+
+
         return new_w, new_b
 
     def acc_test(self, model, t_data, t_label):
