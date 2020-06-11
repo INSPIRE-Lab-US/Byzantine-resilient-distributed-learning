@@ -4,7 +4,7 @@ slurmScripts/
 original_results/
 
 
-result/
+result/*
 
 *.ipynb
 *.pdf
