@@ -102,7 +102,9 @@ The `plot.py` script can be easily modified to run only 1 trial of any of the al
 
 # Contributors
 The original implementation was provided by the author of the paper:
+
 [Zhixiong Yang](https://www.linkedin.com/in/zhixiong-yang-67139152/)
 
-The publicization and distribution of the code was made possible by:
+The publicization and refactoring of the code was made possible by:
+
 [Joseph Shenouda](https://github.com/joeshenouda)
