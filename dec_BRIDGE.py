@@ -2,7 +2,7 @@
 Decentralized Learning with BRIDGE
 
 Run this script by specifying the number of Byzantine nodes, whether they should actually be faulty, and the screening method to defend against them
-Run this 10 times setting monte_trial to 0-9 to reproduce the results
+Run this 10 times setting monte_trial to 0-9 to run 10 independent trials
 '''
 
 import numpy as np
@@ -51,6 +51,8 @@ else:
 
 print(f'Starting Monte Carlo trial {monte_trial}')
 start = time.time()
+#Directory to make results
+os.makedirs(f'./result/{dec_method}',exist_ok=True)
 
 #Setting random seed for reproducibility
 np.random.seed(30+monte_trial)
@@ -103,9 +105,6 @@ wb = [node.weights() for node in w_nodes]
 sess.close()
 
 end = time.time()
-
-
-os.makedirs(f'./result/{dec_method}',exist_ok=True)
 
 
 if b!=0 and goByzantine:

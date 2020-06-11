@@ -1,3 +1,6 @@
+'''
+Plots 10 independent trials of each algorithm and saves to a file  './result/plot_dec.png'
+'''
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt

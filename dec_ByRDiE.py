@@ -2,10 +2,8 @@
 Decentralized Learning with ByRDiE
 
 Run this script by specifying the number of Byzantine nodes and whether they should actually be faulty
-Run this 10 times setting monte_trial to 0-9 to reproduce the results
+Run this 10 times setting monte_trial argument from 0-9 to run ten independent trials
 '''
-# Specify M nodes, N local samples, dataset, failure type, screening type, stepsize, connection rate, T iterations,
-# b Byzantine agents
 
 import numpy as np
 from dist_data import data_prep
@@ -15,6 +13,7 @@ import time
 import pickle
 import random
 import argparse
+import os
 from DecLearning import DecLearning
 
 parser = argparse.ArgumentParser()
@@ -40,6 +39,9 @@ min_neighbor = 4*b+1
 
 print(f'Starting Monte Carlo Trial {monte_trial}')
 start = time.time()
+
+#Directory to store result
+os.makedirs('./result/ByRDiE', exist_ok=True)
 
 #Reproducibility
 np.random.seed(30+monte_trial)
@@ -98,6 +100,7 @@ for iteration in range(T):
 
 
 sess.close()
+
 
 if b!=0 and goByzantine:
     filename = f'./result/ByRDiE/result_ByRDiE_b{b}_{monte_trial}.pickle'

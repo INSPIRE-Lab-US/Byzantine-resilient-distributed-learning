@@ -1,21 +1,27 @@
-#linear classifier for MNIST 
-
-
-
 import tensorflow as tf
 import numpy as np
 
 def weight_variable(shape, std_dev):
+    '''
+    Initialize W matrix
+    '''
     # Outputs a random matrix with mean 0 and stddev=0.1 from normal distribution
     # ensures all the random values are within 2 std dev from the mean
     initial = tf.truncated_normal(shape, stddev=std_dev)
     return tf.Variable(initial)
 
 def bias_variable(shape):
+    '''
+    Initialize bias vector (b)
+    '''
+
     initial = tf.constant(0.1, shape=shape)
     return tf.Variable(initial)
 
 class linear_classifier:
+    '''
+    Learning a linear classifier used a one layer neural network
+    '''
     def __init__(self, stepsize=1e-4, sigma2 = 0.1, adam=True):
         
         #Placeholder for our 784-dimensional data (MNIST data)

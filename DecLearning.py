@@ -6,7 +6,7 @@ from linear_classifier import linear_classifier
 
 class DecLearning:
     '''
-    Encapsulates a simulated decentralized learning framework
+    Encapsulates a simulated decentralized network
     '''
     def __init__(self,dataset = 'MNIST', nodes = 20, byzantine = 0, 
                     local_samples = 2000):
@@ -22,13 +22,8 @@ class DecLearning:
         Generates the adjacency matrix for a graph
 
         Args:
-            nodes: Number of vertices in the graph
+            min_neigh: Minimum number of neighbors for each node (default: 0)
             con_rate: Connection rate of graph (default: 50)
-            b: Number of Byzantine nodes 
-        
-        Returns:
-            w : Relative weight of each edge
-            graph: The adjacency matrix for the graph
         '''
         re = 1                      # regenerate if graph assumption not satisfied
         while re:
@@ -80,7 +75,7 @@ class DecLearning:
 
     def one_hot(self,label):
         '''
-        Return ones hot encoding of label
+        Return one hot encoding of label
         '''
         l_oh = []
         for i in label:
@@ -96,6 +91,7 @@ class DecLearning:
         Arg:
             target: The parameter of the node undergoing Byzantine failure
             strategy: Method of failure
+            interval: Range of values that the failed Byzantine nodes take on
         
         Returns:
             fal: A numpy array with same dimensions as the target
@@ -141,7 +137,7 @@ class DecLearning:
     
     def Krum(self,neighbor, wb, b):
         '''
-        Perform Krum screening
+        Perform BRIDGE-Krum screening
 
         Args:
             neighbor: Matrix of neighbors for each node
@@ -187,7 +183,17 @@ class DecLearning:
         return new_w, new_b
 
     def Bulyan(self, wb, b):
-      
+       '''
+        Perform decentralized BRIDGE-Bulyan with Krum screening
+
+        Args:
+            wb: List with W matrix and b vector for each node
+            b: Number of byzantine nodes
+
+        Returns:
+            new_w: List of W matrix for each node based on Bulyan screening
+            new_b: List of b vector for each node based on Bulyan screening
+        '''      
         new_w = []
         new_b = []
         
@@ -285,7 +291,7 @@ class DecLearning:
             sess: TensforFlow session
             b: Number of Byzantine nodes to defend against
             goByzantine: Boolean to tell us whether b nodes actually undergo failure (default: False)
-            screenMethod: Screening method to be used
+            screenMethod: Screening method to be used (default: None)
         '''
         wb = [node.weights() for node in W]
         ave_w = []
@@ -354,23 +360,17 @@ class DecLearning:
         ave = []
 
         #Iterate over each node in 2D array of neighbors
-        for neighbor_list in neighbor:
-            #neighbor_list is an array that contains all neighbors of a node in the network
-            
-            #Collect weight value at dimension p for each node in the neighborhood of the current node in iteration
-            #Step 6 of the algo in ByRDiE paper
+        for neighbor_list in neighbor:            
+
             neighbors_wp = [_w[n][p] for n in neighbor_list]
 
             if screen:
-                #Step 7 of ByRDiE algo
                 neighbors_wp = np.sort(neighbors_wp, axis = 0)
                 neighbors_wp = neighbors_wp[b : -b]
             
-            #Half of step 8 (average of w across all nodes in neighborhood)
             neighbors_wp = np.mean(neighbors_wp, axis = 0)
             ave.append(neighbors_wp)
         
-        #Half of step 8
         for scalar, node in zip(ave, _w):
             node[p] = scalar
 
@@ -417,13 +417,26 @@ class DecLearning:
     def node_update(self, W, data, sess, stepsize=1e-3):
         '''
         Update model parameters for each node
+
+        Args:
+            W: Nodes in the network
+            data: Training data
+            sess: TensorFlow seassion
+            stepsize: Stepsize for the optimization algorithm (default: 1e-3)
         '''        
         for model, sample, label in zip(W, data.dist_data, data.dist_label):
             sess.run(model.train_step, feed_dict={model.x: sample, model.y_: label, model.stepsize: stepsize})
     
     def node_update_w(self, W, data, p, sess, stepsize=1e-4):
         '''
-        Update W matrix for each node
+        Update W matrix for each node used for coordinate descent with ByRDiE
+
+        Args:
+            W: Nodes in the network
+            data: Training data
+            p: Dimension being updated
+            sess: TensorFlow seassion
+            stepsize: Stepsize for the optimization algorithm (default: 1e-4)            
         '''        
         for model, sample, label in zip(W, data.dist_data, data.dist_label):
             g = sess.run(model.gradient_w, feed_dict={model.x: sample, model.y_: label, model.stepsize: stepsize})
@@ -433,7 +446,14 @@ class DecLearning:
         
     def node_update_b(self, W, data, p, sess, stepsize=1e-4):
         '''
-        Update bias vector for each node
+        Update bias vector for each node used for coordinate descent with ByRDiE
+
+        Args:
+            W: Nodes in the network
+            data: Training data
+            p: Dimension being updated
+            sess: TensorFlow seassion
+            stepsize: Stepsize for the optimization algorithm (default: 1e-4) 
         '''        
         for model, sample, label in zip(W, data.dist_data, data.dist_label):
             g = sess.run(model.gradient_b, feed_dict={model.x: sample, model.y_: label, model.stepsize: stepsize})
