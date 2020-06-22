@@ -31,7 +31,7 @@ In these experiments we simulate a decentralized network to learn a linear multi
 
 2. Train the neural network using all six methods as above while defending against two byzantine nodes and indeed two nodes undergo byzantine failure communicating random values instead of the actual gradient. This is the faulty setting and will produce a plot similar to Figure 3b in the paper.
 
-For each of these experiments, the faultless and fauly setting, we ran them ten times in parallel and averaged the classification accuracy before plotting.
+For each of these experiments, the faultless and faulty setting, we ran each sc  ten Monte Carlo trials in parallel and averaged the classification accuracy before plotting.
 
 ## Computing Environment
 All of our computational experiments were carried out on a Linux high-performance computing (HPC) cluster provided by the Rutgers Office of Advanced Research Computing; specifically, all of our experiments were run on:
