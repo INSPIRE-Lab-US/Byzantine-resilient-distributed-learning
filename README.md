@@ -56,7 +56,8 @@ The MNIST dataset we used can be found in the `./data` directory. The `./data/MN
 
 <a name="bridge"></a>
 # BRIDGE Experiments
-We performed decentralized learning using BRIDGE and some of its variants based on distributed learning screening methods, namely Median, Krum and Bulyan. To train the one layer neural network on MNIST with BRIDGE or its variants run the `dec_BRIDGE.py` script. When no screening method is training is done with distributed gradient descent and no screening.
+We performed decentralized learning using BRIDGE and some of its variants based on distributed learning screening methods, namely Median, Krum and Bulyan. To train the one layer neural network on MNIST with BRIDGE or its variants run the `dec_BRIDGE.py` script. When no screening method is training is done with distributed gradient descent and no screening. Each Monte Carlo trial ran in about one hundred seconds on our machines for all screening methods.
+
 ```
 usage: dec_BRIDGE.py [-h] [-b BYZANTINE] [-gb GOBYZANTINE]
                      [-s {BRIDGE,Median,Krum,Bulyan}]
@@ -78,7 +79,7 @@ optional arguments:
                         default no screening is done regular gradient descent
 ```
 
-Example: BRIDGE defending against two Byzantine nodes with no faulty nodes (faultless).
+**Example:** BRIDGE defending against two Byzantine nodes with no faulty nodes (faultless).
 
 `python dec_BRIDGE.py 0 -b=2 -s=BRIDGE`
 
@@ -87,12 +88,10 @@ With two faulty nodes (faulty)
 `python dec_BRIDGE.py 0 -b=2 -gb=True -s=BRIDGE`
 
 Run each of the possible screening methods ten times in parallel by varying `monte_trial` between 0 and 9 for ten independent Monte Carlo trials.
-
-Each Monte Carlo trial ran in about 100 seconds on our machines for all screening methods.
-
 <a name="byrdie"></a>
 # ByRDiE Experiments
-We performed decentralized learning using ByRDiE, both in the faultless setting and in the presence of Byzantine nodes. To train the one layer neural network on MNIST with ByRDiE run the `dec_ByRDiE.py` script.
+We performed decentralized learning using ByRDiE, both in the faultless setting and in the presence of Byzantine nodes. To train the one layer neural network on MNIST with ByRDiE run the `dec_ByRDiE.py` script. Each Monte Carlo trial for ByRDiE ran in about two days on our machines.
+
 ```
 usage: dec_ByRDiE.py [-h] [-b BYZANTINE] [-gb GOBYZANTINE] monte_trial
 
@@ -108,7 +107,7 @@ optional arguments:
                         Boolean to indicate if the specified number of
                         Byzantine nodes actually send out faulty values
 ```
-Example: ByRDiE defending against two byzantine nodes with no faulty nodes
+**Example:** ByRDiE defending against two byzantine nodes with no faulty nodes
 `python dec_ByRDiE.py 0 -b=2`
 
 with two faulty nodes
@@ -117,7 +116,6 @@ with two faulty nodes
 
 Run `dec_ByRDiE.py` ten times in parallel by varying `monte_trial` between 0 and 9 for ten independent Monte Carlo trials.
 
-Each Monte Carlo trial for ByRDiE ran in about two days on our machines.
 <a name="plotting"></a>
 # Plotting
 
