@@ -17,8 +17,8 @@ import os
 from DecLearning import DecLearning
 
 parser = argparse.ArgumentParser()
-parser.add_argument("monte_trial", help="Specify which monte carlo trial to run", type=int)
-parser.add_argument("-b","--byzantine", help="Number of Byzantine nodes to defend against, if none defaults to 0", type=int)
+parser.add_argument("monte_trial", help="A number between 0 and 9 to indicate which Monte Carlo trial to run", type=int)
+parser.add_argument("-b","--byzantine", help="Maximum number of Byzantine nodes to defend against, if none defaults to 0", type=int)
 parser.add_argument("-gb", "--goByzantine", help="Boolean to indicate if the specified number of Byzantine nodes actually send out faulty values"
                     , type=bool)
 
