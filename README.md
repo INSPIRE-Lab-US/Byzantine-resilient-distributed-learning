@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/248036913.svg)](https://zenodo.org/badge/latestdoi/248036913)
+
 # Byzantine-resilient Decentralized Machine Learning: Codebase for ByRDiE, BRIDGE, and Variants
 
 ## Table of Contents
@@ -22,7 +24,7 @@ The code in this repo is being released under the GNU General Public License v3.
 - Z. Yang and W.U. Bajwa, "BRIDGE: Byzantine-resilient decentralized gradient descent," arXiv preprint, Aug. 2019; [arXiv:1908.08098](https://arxiv.org/abs/1908.08098).
 - Z. Yang, A. Gang, and W.U. Bajwa, "Adversary-resilient distributed and decentralized statistical inference and machine learning: An overview of recent advances under the Byzantine threat model," IEEE Signal Processing Mag., vol. 37, no. 3, pp. 146-159, May 2020; doi: [10.1109/MSP.2020.2973345](https://doi.org/10.1109/MSP.2020.2973345).
 
-**Codebase Citation:** J. Shenouda, Z. Yang, and W.U. Bajwa, "Codebase---Adversary-resilient distributed and decentralized statistical inference and machine learning: An overview of recent advances under the Byzantine threat model," GitHub Repository, 2020; doi: [TBD](#).
+**Codebase Citation:** J. Shenouda, Z. Yang, and W.U. Bajwa, "Codebase---Adversary-resilient distributed and decentralized statistical inference and machine learning: An overview of recent advances under the Byzantine threat model," GitHub Repository, 2020; doi: [10.5281/zenodo.3952994](https://doi.org/10.5281/zenodo.3952994).
 
 ## Summary of Experiments
 The codebase uses implementations of ByRDiE, BRIDGE, and BRIDGE variants to generate results for Byzantine-resilient decentralized learning. The generated results correspond to experiments in which we simulate a decentralized network that trains a linear multiclass classifier on the [MNSIT dataset](http://yann.lecun.com/exdb/mnist/) using a one-layer neural network that is implemented in TensorFlow. The network consists of twenty nodes, with each node assigned two thousand training samples from the MNIST dataset. Similar to the overview paper (Yang et al., 2020), the codebase provides two sets of experiments:
