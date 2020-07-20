@@ -49,7 +49,7 @@ However, we only allocated 4GB of RAM when submitting each of our jobs.
 ## Requirements and Dependencies
 This code is written in Python and uses TensforFlow.  To reproduce the environment with necessary dependencies needed for running of the code in this repo, we recommend that the users create a `conda` environment using the `environment.yml` YAML file that is provided in the repo. Assuming the conda management system is installed on the user's system, this can be done using the following:
 
-```shell
+```
 $ conda env create -f environment.yml
 ```
 
@@ -62,7 +62,7 @@ The MNIST dataset we used in our experiments can be found in the `./data` direct
 # BRIDGE Experiments
 We performed decentralized learning using BRIDGE and some of its variants based on distributed learning screening methods, namely Median, Krum and Bulyan. To train the one-layer neural network on MNIST with BRIDGE or its variants, run the `dec_BRIDGE.py` script. When no screening method is selected, training is done with distributed gradient descent (DGD) without screening. Each Monte Carlo trial ran in about one hundred seconds on our machines for each of the screening methods.
 
-```shell
+```
 usage: dec_BRIDGE.py [-h] [-b BYZANTINE] [-gb GOBYZANTINE]
                      [-s {BRIDGE,Median,Krum,Bulyan}]
                      monte_trial
@@ -88,12 +88,12 @@ optional arguments:
 
 1) BRIDGE defending against at most two Byzantine nodes with no faulty nodes in the network (faultless setting).
 
-```shell
+```
 $ python dec_BRIDGE.py 0 -b=2 -s=BRIDGE
 ```
 2) BRIDGE defending against at most two Byzantine nodes with exactly two faulty nodes in the network (faulty setting).
 
-```shell
+```
 $ python dec_BRIDGE.py 0 -b=2 -gb=True -s=BRIDGE
 ```
 
@@ -103,7 +103,7 @@ The user can run each of the possible screening methods ten times in parallel by
 # ByRDiE Experiments
 We performed decentralized learning using ByRDiE, both in the faultless setting and in the presence of actual Byzantine nodes. To train the one layer neural network on MNIST with ByRDiE, run the `dec_ByRDiE.py` script. Each Monte Carlo trial for ByRDiE ran in about two days on our machines.
 
-```shell
+```
 usage: dec_ByRDiE.py [-h] [-b BYZANTINE] [-gb GOBYZANTINE] monte_trial
 
 positional arguments:
@@ -123,13 +123,13 @@ optional arguments:
 ## Examples
 1) ByRDiE defending against at most two Byzantine nodes with no faulty nodes in the network (faultless setting).
 
-```shell
+```
 $ python dec_ByRDiE.py 0 -b=2
 ```
 
 2) ByRDiE defending against at most two Byzantine nodes with exactly two faulty nodes in the network (faulty setting).
 
-```shell
+```
 $ python dec_ByRDiE.py 0 -b=2 -gb=True
 ```
 
