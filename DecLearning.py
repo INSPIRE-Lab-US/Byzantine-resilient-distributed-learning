@@ -9,11 +9,11 @@ class DecLearning:
     Encapsulates a simulated decentralized network
     '''
     def __init__(self,dataset = 'MNIST', nodes = 20, byzantine = 0, 
-                    local_samples = 2000):
+                    total_samples = 2000):
         self.dataset = dataset
         self.M = nodes
         self.b = byzantine
-        self.N = local_samples
+        self.N = total_samples
         self.graph  = []
         self.edge_weight = []
     
@@ -28,19 +28,14 @@ class DecLearning:
         re = 1                      # regenerate if graph assumption not satisfied
         while re:
             nodes = self.M
-            graph = []
-            for _ in range(nodes):
-                graph.append([])
-            for row in range(nodes):
-                graph[row].append(1)
-                for col in range(row + 1, nodes):
-                    d = random.randint(1, 100)
-                    if d < con_rate:
-                        graph[row].append(1)     #form symmetric matrix row by row
-                        graph[col].append(1)
-                    else:
-                        graph[row].append(0)
-                        graph[col].append(0)
+
+            # Generate adjacency matrix
+            graph = np.random.randint(1,high=100,size=(nodes,nodes))
+            graph = (graph+graph.T)/2
+            graph[graph<con_rate] = 1
+            graph[graph>=con_rate] = 0
+            np.fill_diagonal(graph,1)
+            
             d_max = 0
             for row in graph:
                 if sum(row) > d_max:
