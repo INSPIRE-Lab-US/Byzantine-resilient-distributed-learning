@@ -9,11 +9,11 @@ class DecLearning:
     Encapsulates a simulated decentralized network
     '''
     def __init__(self,dataset = 'MNIST', nodes = 20, byzantine = 0, 
-                    total_samples = 2000):
+                    local_samples = 2000):
         self.dataset = dataset
         self.M = nodes
         self.b = byzantine
-        self.N = total_samples
+        self.N = local_samples
         self.graph  = []
         self.edge_weight = []
     
@@ -28,13 +28,19 @@ class DecLearning:
         re = 1                      # regenerate if graph assumption not satisfied
         while re:
             nodes = self.M
-
-            # Generate adjacency matrix
-            graph = np.random.randint(1,high=100,size=(nodes,nodes))
-            graph = (graph+graph.T)/2
-            graph[graph<con_rate] = 1
-            graph[graph>=con_rate] = 0
-            np.fill_diagonal(graph,1)
+            graph = []
+            for _ in range(nodes):
+                graph.append([])
+            for row in range(nodes):
+                graph[row].append(1)
+                for col in range(row + 1, nodes):
+                    d = random.randint(1, 100)
+                    if d <= con_rate:
+                        graph[row].append(1)     #form symmetric matrix row by row
+                        graph[col].append(1)
+                    else:
+                        graph[row].append(0)
+                        graph[col].append(0)
             
             d_max = 0
             for row in graph:
@@ -166,8 +172,6 @@ class DecLearning:
                 score_w.append(np.sum(dist_w[:(len(neighborhood_w) - b - 2)]))
                 score_b.append(np.sum(dist_b[:(len(neighborhood_b) - b - 2)]))
             
-            print(f'Score W for node {i} is {score_w}')
-            print(f'Score b for node {i} is {score_b}')
             
             ind_w = score_w.index(min(score_w))
             ind_b = score_b.index(min(score_b))
@@ -188,10 +192,10 @@ class DecLearning:
         Returns:
             new_w: List of W matrix for each node based on Bulyan screening
             new_b: List of b vector for each node based on Bulyan screening
-        '''      
+        '''
         new_w = []
         new_b = []
-
+        
 
         #Bulyan screening for W matrix
         neighbor = self.get_neighbor()
@@ -215,19 +219,19 @@ class DecLearning:
                 S_w.append(neighborhood_w.pop(ind_w))
 
 
-        #Part 2 of Bulyan screening for W matrix
-        ave = []
+            #Part 2 of Bulyan screening for W matrix
+            ave = []
 
-        #Dimension of the gradient we are screening for
-        grad_dim = len(S_w[0])
+            #Dimension of the gradient we are screening for
+            grad_dim = len(S_w[0])
 
-        for dim in range(grad_dim):
-            m_i = [w[dim] for w in S_w]
-            m_i = np.sort(m_i, axis = 0)
-            m_i = m_i[b : -b]
-            m_i = np.mean(m_i, axis = 0)
-            ave.append(m_i)
-        new_w.append(ave)
+            for dim in range(grad_dim):
+                m_i = [w[dim] for w in S_w]
+                m_i = np.sort(m_i, axis = 0)
+                m_i = m_i[b : -b]
+                m_i = np.mean(m_i, axis = 0)
+                ave.append(m_i)
+            new_w.append(ave)
 
         #Bulyan screening for b vector
         neighbor = self.get_neighbor()
@@ -252,21 +256,21 @@ class DecLearning:
 
                 del neighbor_list[ind_b]
 
-        #Part 2 of Bulyan screening for W matrix
-        ave = []
+            #Part 2 of Bulyan screening for W matrix
+            ave = []
 
-        #Dimension of the gradient we are screening for
-        grad_dim = len(S_b[0])
+            #Dimension of the gradient we are screening for
+            grad_dim = len(S_b[0])
 
-        for i in range(grad_dim):
-            m_i = [b[i] for b in S_b]
-            m_i = np.sort(m_i, axis = 0)
-            m_i = m_i[b : -b]
-            m_i = np.mean(m_i, axis = 0)
-            ave.append(m_i)
-        new_b.append(ave)          
-
-
+            for i in range(grad_dim):
+                m_i = [b[i] for b in S_b]
+                m_i = np.sort(m_i, axis = 0)
+                m_i = m_i[b : -b]
+                m_i = np.mean(m_i, axis = 0)
+                ave.append(m_i)
+            new_b.append(ave)          
+        
+        
         return new_w, new_b
 
     def acc_test(self, model, t_data, t_label):
@@ -300,7 +304,7 @@ class DecLearning:
                 wb[byzant][1] = self.Byzantine(wb[byzant][1], interval=byz_range)
 
         if screenMethod == 'Median':
-            ave_w, ave_b = self.Median(W, neighbor, wb, b)
+            ave_w, ave_b = self.Median(neighbor, wb, b)
         if screenMethod == 'Krum':
             ave_w, ave_b = self.Krum(neighbor, wb, b)
         if screenMethod == 'Bulyan':

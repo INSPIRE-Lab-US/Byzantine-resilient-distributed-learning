@@ -77,7 +77,6 @@ for iteration in range(T):
 
     #Iterates over the first 784 dimensions of the weights
     for p in range(7840):
-        print(f'Dimension {p} of W')
         #Communication 
         para.communication_w(w_nodes, neighbors, p, sess, para.b, screen = True, goByzantine=goByzantine)
         #node update step    

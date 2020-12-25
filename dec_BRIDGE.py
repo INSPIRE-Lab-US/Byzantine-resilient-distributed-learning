@@ -59,11 +59,12 @@ np.random.seed(30+monte_trial)
 random.seed(a=30+monte_trial)
 
 num_nodes = 20
-para = DecLearning(dataset = 'MNIST', nodes=num_nodes, byzantine=b, total_samples=2000)
+para = DecLearning(dataset = 'MNIST', nodes=num_nodes, byzantine=b, local_samples=100)
 
 #Generate the graph
-para.gen_graph(min_neigh = min_neighbor)    
-local_set, test_data, test_label = data_prep(para.dataset, para.M, para.N, one_hot=True)
+con_rate = 50
+para.gen_graph(min_neigh = min_neighbor,con_rate=con_rate)    
+local_set, test_data, test_label = data_prep(para.dataset, para.M, para.M*para.N, one_hot=True)
 neighbors = para.get_neighbor()
 
 save = []
@@ -109,7 +110,7 @@ end = time.time()
 
 
 if b!=0 and goByzantine:
-    filename = f'./result/{dec_method}/result_{num_nodes}_nodes{con_rate}%_b{b}_{monte_trial}.pickle'
+    filename = f'./result/{dec_method}/result_{num_nodes}_nodes_{con_rate}%_b{b}_{monte_trial}.pickle'
 else:
     filename = f'./result/{dec_method}/result_{num_nodes}_nodes_{con_rate}%_b{b}_faultless_{monte_trial}.pickle'
 
