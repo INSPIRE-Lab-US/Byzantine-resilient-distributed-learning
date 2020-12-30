@@ -37,9 +37,9 @@ for monte in range(10):
     with open(f'./result/DGD/result_20_nodes_50%_b2_{monte}.pickle', 'rb') as handle:
         dgd_b2.append(pickle.load(handle))
     
-    with open(f'./result/ByRDiE/result_ByRDiE_b2_faultless_{monte}.pickle', 'rb') as handle:
+    with open(f'./result/ByRDiE/result_20_nodes_50%_b0_faultless_{monte}.pickle', 'rb') as handle:
         byrdie_b2_faultless.append(pickle.load(handle))
-    with open(f'./result/ByRDiE/result_ByRDiE_b2_{monte}.pickle', 'rb') as handle:
+    with open(f'./result/ByRDiE/result_20_nodes_50%_b2_{monte}.pickle', 'rb') as handle:
         byrdie_b2.append(pickle.load(handle))
     
     with open(f'./result/BRIDGE/result_20_nodes_50%_b2_faultless_{monte}.pickle','rb') as handle:

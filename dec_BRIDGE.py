@@ -7,8 +7,8 @@ Run this 10 times setting monte_trial to 0-9 to run 10 independent trials
 
 import numpy as np
 from dist_data import data_prep
-from linear_classifier import linear_classifier
 import tensorflow as tf
+from linear_classifier import linear_classifier
 import time
 import pickle
 import random
@@ -59,7 +59,7 @@ np.random.seed(30+monte_trial)
 random.seed(a=30+monte_trial)
 
 num_nodes = 20
-para = DecLearning(dataset = 'MNIST', nodes=num_nodes, byzantine=b, local_samples=100)
+para = DecLearning(dataset = 'MNIST', nodes=num_nodes, byzantine=b, local_samples=2000)
 
 #Generate the graph
 con_rate = 50
